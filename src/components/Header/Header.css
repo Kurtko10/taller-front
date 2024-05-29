@@ -28,17 +28,15 @@
   height: 50px;
 }
 
-.navbar  {
+.navbar {
+    height: 55px;
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 1000;
-    margin-left: 0;
     box-shadow: 0 0 30px -5px rgba(0, 0, 0, 0.906);
-    background-color: rgba(240, 248, 255, 0.466) !important;
-    
-
-  }
+    background-color: rgba(240, 248, 255, 0.945) !important;
+}
 
   .nav-link  {
     cursor: pointer;

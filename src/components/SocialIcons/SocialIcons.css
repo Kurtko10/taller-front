@@ -1,0 +1,21 @@
+.social-icons {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 10px;
+    transition: opacity 0.3s ease; 
+    z-index: 2;
+  }
+
+  .social-icons.scrolled {
+    opacity: 0.3;
+  }
+  
+  .social-icon {
+    margin-right: 10px;
+    transition: transform 0.5s ease;
+  }
+  .social-icon:hover {
+    transform: scale(1.15);
+    
+  }

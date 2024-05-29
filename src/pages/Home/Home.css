@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
+
+.home-page{
+  
+  position: absolute;
+  width: 100%;
+}
+.section {
+  height: 100vh;
+  overflow: auto;
+  justify-content: center;
+  border: 2px outset gray;
+  padding-top: 80px; 
+  
+  position: relative;
+  margin-bottom: 1em;
+}
+
+.under-header {
+  position: relative;
+}
+
+.under-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px; 
+  background: rgba(255, 255, 255, 0.5); 
+  pointer-events: none; 
+}
+
+#home {
+  
+margin-top: 4em;
+  width: 85%;
+  background-color: rgba(255, 255, 255, 0.504);
+  color: rgb(70, 0, 0);
+}
+.box h3, .box h5 a{
+  font-family: "Jersey 10", sans-serif;
+  color:black;
+  text-decoration: underline;
+}
+.box p{
+  color: rgb(0, 0, 0);
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+}
+
+.box {
+  cursor: pointer;
+  background-color: rgba(111, 111, 111, 0.558);  
+  position: relative;
+  width: 100%; 
+  height: 70vh;
+  border-radius: 15px;
+  border: 3px outset rgb(187, 0, 0) ;
+  overflow: hidden;
+}
+.box:hover{
+  border: 4px unset grey;
+  box-shadow: 0px 0px 10px rgba(0, 0, 10, 0.9);
+}
+.box img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; 
+  left: 0; 
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.8s ease;
+}
+.box:hover img {
+  transform: scale(1.1); 
+  transition: 3s ease;
+}
+
+.box img:first-child {
+  opacity: 1; 
+}
+
+.box img:not(:first-child) {
+  opacity: 0; 
+}
+
+.box img.show {
+  opacity: 1; 
+}
+
+.box img.hide {
+  opacity: 0; 
+}
+
+
+
+#studio {
+ 
+  width: 100%;
+  background-size:contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  background-color: rgba(204, 0, 0, 0.866);
+  color: rgb(70, 0, 0);
+}
+
+#services {
+
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: rgba(255, 255, 255, 0.866);
+  color: rgb(70, 0, 0);
+}
+
+#artists{
+  margin-left: 10%;
+  width: 80%;
+  background-color: rgba(81, 73, 73, 0.806);
+  color: rgb(70, 0, 0);
+}
+
+.scrollToTop {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: rgb(15, 0, 0);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.scrollToTop:hover {
+  opacity: 0.7;
+}
+
+  
+  
+ 
