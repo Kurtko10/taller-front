@@ -1,0 +1,18 @@
+.input-design {
+    border-radius: 1em;
+    height: 2em;
+    width: 15em;
+}
+
+.custom-input-container {
+    height: 4em;
+}
+.input-error {
+    border-width: 0.2em;
+    border-color: red
+}
+
+.error-message {
+    font-weight: bold;
+    color: red
+}
