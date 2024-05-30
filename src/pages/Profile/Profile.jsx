@@ -191,24 +191,26 @@ export const Profile = () => {
             </Col>
           </Row>
         </Form>
-        <BootstrapModal
-          profileData={userData}
-          token={token}
-          inputHandler={inputHandler}
-          handleSaveChanges={handleSaveChanges}
-          setUserData={setUserData}
-          updateData={updateData}
-          isPasswordInputDisabled={isPasswordInputDisabled}
-          passwordErrors={passwordErrors}
-          togglePasswordInput={togglePasswordInput}
-          passwordData={passwordData}
-        />
-        {role !== 'admin' && (
-          //<Button variant="danger" onClick={() => navigate("/appointments")}>Citas</Button>
-          <div className="image-button" onClick={() => navigate("/appointments")}>
-            <img src={imgCita} alt="Citas" className="image-button-img"/>
-          </div>
-        )}
+        <div className="button-container">
+          {role !== 'admin' && (
+            <div className="image-button" onClick={() => navigate("/appointments")}>
+              <img src={imgCita} alt="Citas" className="image-button-img"/>
+              <div className="button-text">Citas</div>
+            </div>
+          )}
+          <BootstrapModal
+            profileData={userData}
+            token={token}
+            inputHandler={inputHandler}
+            handleSaveChanges={handleSaveChanges}
+            setUserData={setUserData}
+            updateData={updateData}
+            isPasswordInputDisabled={isPasswordInputDisabled}
+            passwordErrors={passwordErrors}
+            togglePasswordInput={togglePasswordInput}
+            passwordData={passwordData}
+          />
+        </div>
       </div>
     </>
   );

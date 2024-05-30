@@ -112,6 +112,7 @@ function BootstrapModal({ profileData, token, setUserData }) {
       </Button> */}
       <div className="image-button" onClick={handleShow}>
             <img src={imgModificar} alt="Modificar" className="image-button-img"/>
+            <div className="button-text">Editar</div>
           </div>
 
       <Modal show={show} onHide={handleClose}>
