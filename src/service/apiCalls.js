@@ -10,4 +10,32 @@ export const loginCall = async (credentials) => {
     return res;
 
 };
+// Registro
+export const registerNewUserCall = async (credentials) => {
+  try {
+    const response = await axios.post(`${API_URL}/api/auth/register`, credentials);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error('Error de respuesta:', error.response.data);
+      return {
+        success: false,
+        message: error.response.data.message || 'Error en el registro del usuario',
+        status: error.response.status,
+      };
+    } else if (error.request) {
+      console.error('Error de solicitud:', error.request);
+      return {
+        success: false,
+        message: 'No se recibió respuesta del servidor',
+      };
+    } else {
+      console.error('Error:', error.message);
+      return {
+        success: false,
+        message: 'Error en la configuración de la solicitud',
+      };
+    }
+  }
+};
 

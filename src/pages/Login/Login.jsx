@@ -57,14 +57,13 @@ const Login = () => {
       if (answer.data.token) {
         const uDecodificado = decodeToken(answer.data.token);
         dispatch(login({ token: answer.data.token, decodificado: uDecodificado })); 
+        console.log(uDecodificado);
         setMsg(`${uDecodificado.userName}, bienvenid@ de nuevo.`);
 
         if (uDecodificado.userRole === "admin") {
-          // Redirigir al usuario a la vista de administrador
           navigate("/");
           console.log("soy admin");
         } else {
-          // Redirigir al usuario a su perfil u otra vista
           setTimeout(() => {
             navigate("/");
             console.log("soy user");
