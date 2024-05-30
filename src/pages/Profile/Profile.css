@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
+
+#formProfile{
+    border: 2px outset black;
+    justify-content: center;
+    margin-top: 5em;
+    margin-bottom: 0.2em;
+    justify-content: center;
+    background-color: rgba(185, 185, 185, 0.821);
+    color: black;
+    font-family: "Jersey 10", sans-serif;
+    padding: 1.5em;
+    background-image: url(../../img/fondoPerfil.jpg);
+    background-size:cover;
+    background-position: center;
+}
+.titleProfile{
+  font-family: "Jersey 10", sans-serif;
+  font-size: 2em;
+  text-decoration: underline;
+  color: rgb(0, 0, 0);
+  background-color: rgba(240, 248, 255, 0.495);
+  box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.906);
+  border-radius: 40%;
+}
+.input-design[disabled] {
+    background-color: white !important;
+    font-size: 1.2em;
+    text-align: center;
+    border-color: grey;
+  }
+  .form-label{
+    font-family: "Jersey 10", sans-serif;
+    color: rgb(0, 0, 0);
+    font-size: 1.2em;
+    
+ 
+  
+  }
+  .profile-container {
+    display: flex;
+    width: 60%;
+    height: auto;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    margin-left: 20%;
+  
+}
+.avatar-container {
+  margin: 20px 0;
+}
+
+.avatar-img {
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.2em;
+}

@@ -38,4 +38,16 @@ export const registerNewUserCall = async (credentials) => {
     }
   }
 };
+// Ver perfil de usuario
+export const bringProfile = async (token) => {
+  const config = {
+      headers: {
+          Authorization: `Bearer ${token}`
+      }
+  }
+  const res = await axios.get(`${API_URL}/api/users/profile/profile`, config);
+
+  return res;
+  
+};
 

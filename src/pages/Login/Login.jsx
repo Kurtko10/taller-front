@@ -107,7 +107,7 @@ const Login = () => {
             className={"regularButtonClass"}
             onClick={handleLogin}
           />
-           <div className="or-separator">o</div> {/* Añadir el separador */}
+           <div className="or-separator">o</div> 
           <ButtonC
             title={"Regístrate"}
             className={"smallButtonClass"}
