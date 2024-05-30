@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { CustomInput } from "../CusstomInput/CustomInput";
-//import { updateProfile } from "../../service/apiCalls";
+import { updateProfile } from "../../service/apiCalls";
 import { inputValidator } from "../../utils/validator";
 import imgModificar from "../../img/modificarPerfil.png"
 import "./BootstrapModal.css";
@@ -165,16 +165,16 @@ function BootstrapModal({ profileData, token, setUserData }) {
           <CustomInput
             typeProp="text"
             nameProp="provincia"
-            placeholderProp={profileData?.clients?.provincia || ""}
-            valueProp={updatedData?.provincia || ""}
-            isDisabled={true}
+            placeholderProp={profileData?.province || ""}
+            valueProp={updatedData?.province || ""}
+            isDisabled={false}
             handlerProp={inputHandler}
           />
           <CustomInput
             typeProp="text"
             nameProp="clientsId"
-            placeholderProp={`Número de cliente: ${profileData?.clients?.id || ""}`}
-            valueProp={updatedData?.clientsId || ""}
+            placeholderProp={`Número de cliente: ${profileData?.id || ""}`}
+            valueProp={updatedData?.id || ""}
             isDisabled={true}
             handlerProp={inputHandler}
           />

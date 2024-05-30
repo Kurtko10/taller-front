@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
 
 #formProfile{
-    border: 2px outset black;
+    
     justify-content: center;
     margin-top: 5em;
     margin-bottom: 0.2em;
@@ -13,6 +13,12 @@
     background-image: url(../../img/fondoPerfil.jpg);
     background-size:cover;
     background-position: center;
+    box-shadow: 0 0 40px 20px rgba(0, 0, 0, 0.906);
+    border-radius: 10%;
+}
+#formProfile:hover{
+  box-shadow: 0 0 40px 30px rgba(0, 0, 0, 0.906);
+  transition: 0.5s;
 }
 .titleProfile{
   font-family: "Jersey 10", sans-serif;
