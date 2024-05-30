@@ -5,6 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import { CustomInput } from "../CusstomInput/CustomInput";
 //import { updateProfile } from "../../service/apiCalls";
 import { inputValidator } from "../../utils/validator";
+import imgModificar from "../../img/modificarPerfil.png"
 import "./BootstrapModal.css";
 
 function BootstrapModal({ profileData, token, setUserData }) {
@@ -106,9 +107,12 @@ function BootstrapModal({ profileData, token, setUserData }) {
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
+      {/* <Button variant="primary" onClick={handleShow}>
         Modificar
-      </Button>
+      </Button> */}
+      <div className="image-button" onClick={handleShow}>
+            <img src={imgModificar} alt="Modificar" className="image-button-img"/>
+          </div>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>

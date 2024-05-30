@@ -11,6 +11,7 @@ import BootstrapModal from "../../components/BootstrapModal/BootstrapModal";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import { inputValidator } from "../../utils/validator";
+import imgCita from "../../img/iconoCitas.png"
 
 export const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -203,7 +204,10 @@ export const Profile = () => {
           passwordData={passwordData}
         />
         {role !== 'admin' && (
-          <Button variant="danger" onClick={() => navigate("/appointments")}>Citas</Button>
+          //<Button variant="danger" onClick={() => navigate("/appointments")}>Citas</Button>
+          <div className="image-button" onClick={() => navigate("/appointments")}>
+            <img src={imgCita} alt="Citas" className="image-button-img"/>
+          </div>
         )}
       </div>
     </>
