@@ -100,6 +100,7 @@ export const createAppointment = async (appointmentData, token) => {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log(appointmentData);
     return response.data;
   } catch (error) {
 
@@ -123,4 +124,15 @@ export const getUserCars = async (token, userId) => {
     throw error;
   }
 };
+
+export const getUsersByManagerRole = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/api/users/role/managers`);
+    return Array.isArray(res.data) ? res.data : []; // Asegúrate de devolver una matriz
+  } catch (error) {
+    console.error('Error al obtener los trabajadores con rol de manager', error);
+    throw error; // Lanza el error para que pueda ser manejado en el componente
+  }
+};
+
 

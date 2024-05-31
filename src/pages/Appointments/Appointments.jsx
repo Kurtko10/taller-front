@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Modal, Container, Row, Col } from 'react-bootstrap';
-import { getAppointmentsByClientId,updateAppointmentById,createAppointment, bringProfile } from "../../service/apiCalls";
+import { getAppointmentsByClientId, updateAppointmentById, createAppointment, bringProfile, getUserCars, getUsersByManagerRole } from "../../service/apiCalls"; 
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
 import { useSelector } from 'react-redux';
 import { getUserData } from "../../app/slices/userSlice";
@@ -13,6 +13,13 @@ import DataTable from '../../components/Table/Table';
 import CustomPagination from '../../components/Pagination/Pagination';
 import './Appointments.css';
 
+const serviceWorkerMap = {
+  "1": "mechanic",
+  "2": "quick_service",
+  "3": "painter",
+  "4": "bodyworker"
+};
+
 const Appointments = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,8 +29,14 @@ const Appointments = () => {
   const [formData, setFormData] = useState({
     datetime: "",
     service_id: "",
-    client_id: ""
+    client_id: "",
+    car_id: "",
+    worker_id: "",
+    observations: ""
   });
+  const [cars, setCars] = useState([]);
+  const [workers, setWorkers] = useState([]);
+  const [filteredWorkers, setFilteredWorkers] = useState([]);
   const userReduxData = useSelector(getUserData);
   const token = userReduxData.token;
   const [clientId, setClientId] = useState(null);
@@ -37,6 +50,7 @@ const Appointments = () => {
   useEffect(() => {
     if (token) {
       fetchClientData();
+      fetchAllWorkers();
     }
   }, [token]);
 
@@ -72,12 +86,30 @@ const Appointments = () => {
     }
   };
 
+  const fetchAllWorkers = async () => {
+    try {
+      const response = await getUsersByManagerRole();
+      setWorkers(response);
+    } catch (error) {
+      alert('Error al obtener los trabajadores');
+    }
+  };
+
   const getAppointments = async () => {
     try {
       const appointmentsData = await getAppointmentsByClientId(token);
       setAppointments(appointmentsData || []);
     } catch (error) {
       alert('Hubo un error al obtener las citas');
+    }
+  };
+
+  const fetchUserCars = async (clientId, token) => {
+    try {
+      const userCars = await getUserCars(token, clientId);
+      setCars(userCars.cars || []);
+    } catch (error) {
+      alert('Error al obtener los datos de los vehículos');
     }
   };
 
@@ -148,9 +180,10 @@ const Appointments = () => {
     return matchesFilter && matchesSearchQuery;
   });
 
-  const handleCreateAppointmentClick = () => {
+  const handleCreateAppointmentClick = async () => {
     if (clientId) {
       setFormData((prevState) => ({ ...prevState, client_id: clientId }));
+      await fetchUserCars(clientId, token); 
       setShowNewAppointmentModal(true);
     } else {
       alert('ID cliente no encontrado');
@@ -160,6 +193,24 @@ const Appointments = () => {
   const handleServiceChange = (e) => {
     const selectedService = e.target.value;
     setFormData((prevState) => ({ ...prevState, service_id: selectedService }));
+
+    const workerType = serviceWorkerMap[selectedService];
+    if (Array.isArray(workers)) {
+      const filtered = workers.filter(worker => worker.workerType === workerType);
+      setFilteredWorkers(filtered);
+    } else {
+      setFilteredWorkers([]); // Asegúrate de manejar el caso donde workers no es una matriz
+    }
+  };
+
+  const handleCarChange = (e) => {
+    const selectedCar = e.target.value;
+    setFormData((prevState) => ({ ...prevState, car_id: selectedCar }));
+  };
+
+  const handleWorkerChange = (e) => {
+    const selectedWorker = e.target.value;
+    setFormData((prevState) => ({ ...prevState, worker_id: selectedWorker }));
   };
 
   const handleInputChange = (e) => {
@@ -169,15 +220,27 @@ const Appointments = () => {
 
   const handleCreateAppointment = async () => {
     try {
-      await createAppointment(formData, token);
+      const { datetime, service_id, client_id, car_id, worker_id, observations } = formData;
+      const formattedData = {
+        date: datetime,
+        service_id: parseInt(service_id),
+        user_id_client: parseInt(client_id),
+        user_id_worker: parseInt(worker_id),
+        car_id: parseInt(car_id),
+        observations
+      };
+
+      console.log("Datos del formulario enviados:", formattedData);
+
+      await createAppointment(formattedData, token);
       setShowNewAppointmentModal(false);
       getAppointments();
     } catch (error) {
       alert('Hubo un error al intentar crear la cita.');
+      console.error("Error al crear la cita:", error.response ? error.response.data : error.message);
     }
   };
 
-  // Paginación
   const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -214,20 +277,24 @@ const Appointments = () => {
           <option value="all">Todas</option>
         </Form.Control>
       </Form.Group>
-      <Form.Group controlId="formSearchCriteria">
-        <Form.Label>Criterio de Búsqueda:</Form.Label>
-        <Form.Control as="select" value={searchCriteria} onChange={handleCriteriaChange}>
-          <option value="id">ID Cita</option>
-          <option value="clientId">ID Cliente</option>
-          <option value="clientName">Cliente</option>
-          <option value="serviceName">Servicio</option>
-        </Form.Control>
-      </Form.Group>
-      <SearchInput
-        placeholder={`Buscar por ${searchCriteria}`}
-        value={searchQuery}
-        onChange={handleSearchChange}
-      />
+      {role === 'manager' && (
+        <>
+          <Form.Group controlId="formSearchCriteria">
+            <Form.Label>Criterio de Búsqueda:</Form.Label>
+            <Form.Control as="select" value={searchCriteria} onChange={handleCriteriaChange}>
+              <option value="id">ID Cita</option>
+              <option value="clientId">ID Cliente</option>
+              <option value="clientName">Cliente</option>
+              <option value="serviceName">Servicio</option>
+            </Form.Control>
+          </Form.Group>
+          <SearchInput
+            placeholder={`Buscar por ${searchCriteria}`}
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+        </>
+      )}
       {role !== 'manager' && (
         <ButtonCita text="Crear Nueva Cita" onClick={handleCreateAppointmentClick} className="button-cita create-appointment-button" />
       )}
@@ -298,6 +365,35 @@ const Appointments = () => {
                 <option value="4">Aire acondicionado</option>
               </Form.Select>
             </Form.Group>
+            <Form.Group controlId="formCar">
+              <Form.Label>Vehículo</Form.Label>
+              <Form.Select name="car_id" value={formData.car_id} onChange={handleCarChange} required>
+                <option value="">Selecciona un vehículo</option>
+                {cars.map((car) => (
+                  <option key={car.id} value={car.id}>{`${car.carBrand} ${car.model} (${car.licensePlate})`}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group controlId="formWorker">
+              <Form.Label>Trabajador</Form.Label>
+              <Form.Select name="worker_id" value={formData.worker_id} onChange={handleWorkerChange} required>
+                <option value="">Selecciona un trabajador</option>
+                {filteredWorkers.map((worker) => (
+                  <option key={worker.id} value={worker.id}>{`${worker.firstName} ${worker.lastName}`}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group controlId="formObservations">
+              <Form.Label>Observaciones</Form.Label>
+              <Form.Control
+                as="textarea"
+                name="observations"
+                value={formData.observations}
+                onChange={handleInputChange}
+                maxLength="255"
+                rows={3}
+              />
+            </Form.Group>
             <Form.Group controlId="formDatetime">
               <Form.Label>Fecha y Hora</Form.Label>
               <Form.Control
@@ -325,5 +421,4 @@ const Appointments = () => {
 };
 
 export default Appointments;
-
 
