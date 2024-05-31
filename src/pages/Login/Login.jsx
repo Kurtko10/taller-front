@@ -9,6 +9,7 @@ import { CustomInput } from "../../components/CusstomInput/CustomInput";
 import { ButtonC } from "../../components/ButtonC/ButtonC";
 //import Button from "../../components/ButtonCita/ButtonCita";
 import SocialIcons from "../../components/SocialIcons/SocialIcons";
+import gif from "../../img/giphy.gif"
 
 import "./Login.css";
 
@@ -67,7 +68,7 @@ const Login = () => {
           setTimeout(() => {
             navigate("/");
             console.log("soy user");
-          }, 3000);
+          }, 4000);
         }
       }
     } catch (error) {
@@ -115,7 +116,10 @@ const Login = () => {
           />
         </>
       ) : (
-        <div className="msg-welcome">{msg}</div>
+        <div className="msg-welcome">{msg}
+        <img src={gif} alt="GIF" className="gif-style" />
+        </div>
+        
       )}
     </div>
   );
