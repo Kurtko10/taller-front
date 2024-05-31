@@ -66,7 +66,7 @@ const Login = () => {
           console.log("soy admin");
         } else {
           setTimeout(() => {
-            navigate("/");
+            navigate("/profile");
             console.log("soy user");
           }, 4000);
         }
@@ -116,7 +116,7 @@ const Login = () => {
           />
         </>
       ) : (
-        <div className="msg-welcome">{msg}
+        <div className="msg-welcome">{msg} <br />
         <img src={gif} alt="GIF" className="gif-style" />
         </div>
         

@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
+
+.button-cita {
+    font-size: 1.5em;
+    width: 8em;
+    height: 2em;
+    color: rgb(214, 214, 214);
+    border-left: 0.08em outset;
+    position: fixed;
+    bottom: 20px;
+    right: 0;
+    cursor: pointer;
+    padding: 10px;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}  
+  
+  .button-cita::before,
+  .button-cita::after {
+    content: '';
+    position: absolute;
+    width: inherit;
+    border-left: inherit;
+    z-index: -1;
+  }
+  
+  .button-cita::before {
+    height: 80%;
+    top: 10%;
+    left: calc(-0.15em - 0.08em * 2);
+    filter: brightness(0.8);
+  }
+  
+  .button-cita::after {
+    height: 60%;
+    top: 20%;
+    left: calc(-0.15em * 2 - 0.08em * 3);
+    filter: brightness(0.6);
+  }
+  
+  .button-cita span {
+    position: relative;
+    height: 120%;
+    box-sizing: border-box;
+    border: 0.08em solid;
+    border-radius: 15px;
+    background-color: #6d0000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Jersey 10", sans-serif;
+    text-transform: capitalize;
+    transform: translateX(calc(-0.15em * 3 - 0.08em * 2));
+    transition: 0.3s;
+    overflow: hidden;
+  }
+  
+  .button-cita:hover span {
+    transform: translateX(0.15em);
+    color: white;
+  }
+  .button-cita span::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%; 
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 0, 0, 0.461); 
+    transition: left 1.5s;
+    z-index: -1;
+  }
+  
+  .button-cita:hover span::before {
+    left: 100%; 
+    z-index: -1;
+}
+  .button-cita.scrolled {
+    opacity: 0.5; 
+    transition: opacity 0.3s ease; 
+  }
+  
+  @media (max-width: 768px) {
+    .button-cita {
+      transform: scale(0.7);
+    }
+  } 
+  

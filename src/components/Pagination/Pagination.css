@@ -1,0 +1,10 @@
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap !important;
+    margin-top: 20px;
+  }
+
+  .active>.page-link, .page-link.active{
+    background-color: brown;
+  }

@@ -37,6 +37,9 @@
     box-shadow: 0 0 30px -5px rgba(0, 0, 0, 0.906);
     background-color: rgba(240, 248, 255, 0.945) !important;
 }
+#basic-navbar-nav{
+  margin-right: 20px;
+}
 
   .nav-link  {
     cursor: pointer;

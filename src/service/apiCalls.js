@@ -62,3 +62,20 @@ export const updateProfile = async (data, token) => {
   const res = await axios.put(`${API_URL}/api/users/profile/profile`, data, config)
   return res
 };
+
+// Ver cita de un usuario 
+
+export const getAppointmentsByClientId = async (token) => {
+  try {
+     
+      const config = {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      };
+      const res = await axios.get(`${API_URL}/api/appointments/client/`, config);    
+      return res.data;
+  } catch (error) {
+      throw error;
+  }
+};

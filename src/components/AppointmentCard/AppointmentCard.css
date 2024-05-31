@@ -1,0 +1,23 @@
+.completed {
+  background-color: rgb(151, 0, 0) !important;
+  color: azure;
+}
+
+.pending {
+  background-color: rgb(88, 88, 253) !important;
+  color: azure
+}
+.pending:hover {
+  background-color: rgb(60, 60, 255) !important;
+  border: 1px red solid;
+  box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.906);
+}
+
+.in-progress {
+  background-color: rgb(156, 156, 2) !important;
+  border-color: red;
+}
+
+.card-body-disabled {
+  opacity: 0.5;
+}

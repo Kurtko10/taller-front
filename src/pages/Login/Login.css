@@ -49,3 +49,12 @@
   .smallButtonClass:hover {
     background-color: #0056b3;
   }
+  .gif-style {
+    max-width: 200px;  
+    height: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    opacity: 0.8; 
+    border-radius: 50%; 
+    border: 1px outset black;
+  }
