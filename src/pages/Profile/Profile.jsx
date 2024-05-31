@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUserProfile, selectUserData } from "../../app/slices/userSlice";
 import { getUserData } from "../../app/slices/userSlice";
-import { Form, Card, Row, Col, Button } from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 import { bringProfile } from "../../service/apiCalls";
 import { CustomInput } from "../../components/CusstomInput/CustomInput";
-//import ButtonCita from "../../components/ButtonCita/ButtonCita";
 import SocialIcons from "../../components/SocialIcons/SocialIcons";
 import BootstrapModal from "../../components/BootstrapModal/BootstrapModal";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
-import { inputValidator } from "../../utils/validator";
-import imgCita from "../../img/iconoCitas.png"
+import imgCita from "../../img/iconoCitas.png";
+import imgCar from "../../img/iconocar.png";
+import UserCars from "../../components/CarComponent/CarComponent"; 
 
 export const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -22,11 +21,13 @@ export const Profile = () => {
   });
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isPasswordInputDisabled, setIsPasswordInputDisabled] = useState(true);
+  const [showCars, setShowCars] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const myPassport = useSelector(getUserData);
   const token = myPassport.token;
+  const userId = myPassport.id; 
   const [userData, setUserData] = useState();
   const [userName, setUserName] = useState("");
   const [updateData, setUpdateData] = useState({});
@@ -94,6 +95,11 @@ export const Profile = () => {
     setIsPasswordInputDisabled(!isPasswordInputDisabled);
   };
 
+  const handleShowCars = () => {
+    console.log("Toggling showCars:", !showCars);
+    setShowCars(!showCars);
+  };
+
   if (!token) {
     return null;
   }
@@ -101,12 +107,10 @@ export const Profile = () => {
   return (
     <>
       <div className="justify-content-center text-center profile-container">
-        {/* <ButtonCita className="button-cita" text="<  Pedir Cita  >" /> */}
         <SocialIcons urls={["https://whatsapp.com/", "https://tiktok.com/", "https://instagram.com/"]} />
         <Form id="formProfile">
-        <div className="avatar-container">
-            
-          <div className="titleProfile"><img src={userData?.avatar} alt="Avatar" className="avatar-img"/> {userData?.firstName}, aquí está tu perfil</div>
+          <div className="avatar-container">
+            <div className="titleProfile"><img src={userData?.avatar} alt="Avatar" className="avatar-img"/> {userData?.firstName}, aquí está tu perfil</div>
           </div>
           
           <Row>
@@ -210,9 +214,16 @@ export const Profile = () => {
             togglePasswordInput={togglePasswordInput}
             passwordData={passwordData}
           />
+          <div className="image-button" onClick={handleShowCars}>
+            <img src={imgCar} alt="Vehículos" className="image-button-img"/>
+            <div className="button-text">Vehículos</div>
+          </div>
+          
         </div>
+        {showCars && <UserCars userId={userData.id} token={token} />}
       </div>
     </>
   );
 };
+
 

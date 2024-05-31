@@ -106,3 +106,21 @@ export const createAppointment = async (appointmentData, token) => {
     throw error;
   }
 };
+
+
+export const getUserCars = async (token, userId) => {
+  console.log('getUserCars called with userId:', userId);
+  try {
+    const response = await axios.get(`${API_URL}/api/cars/userCars`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log('API response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user cars:', error);
+    throw error;
+  }
+};
+
