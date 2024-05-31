@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Form, Button, Modal, Container, Row, Col } from 'react-bootstrap';
-import { getAppointmentsByClientId, updateAppointmentById, createAppointment, bringProfile, getUserCars, getUsersByManagerRole } from "../../service/apiCalls"; 
+import { Form, Button, Modal, Container, Row, Col, Table, Carousel } from 'react-bootstrap';
+import { getAppointmentsByClientId, getAppointmentsByWorkerId, updateAppointmentById, createAppointment, deleteAppointmentById, bringProfile, getUserCars, getUsersByManagerRole } from "../../service/apiCalls"; 
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
 import { useSelector } from 'react-redux';
 import { getUserData } from "../../app/slices/userSlice";
@@ -37,6 +37,7 @@ const Appointments = () => {
   const [cars, setCars] = useState([]);
   const [workers, setWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
+  const [showAppointmentDetails, setShowAppointmentDetails] = useState(null);
   const userReduxData = useSelector(getUserData);
   const token = userReduxData.token;
   const [clientId, setClientId] = useState(null);
@@ -45,7 +46,26 @@ const Appointments = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCriteria, setSearchCriteria] = useState('id');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editData, setEditData] = useState({
+    datetime: "",
+    status: "",
+  });
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const itemsPerPage = 8;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     if (token) {
@@ -96,11 +116,20 @@ const Appointments = () => {
   };
 
   const getAppointments = async () => {
-    try {
-      const appointmentsData = await getAppointmentsByClientId(token);
-      setAppointments(appointmentsData || []);
-    } catch (error) {
-      alert('Hubo un error al obtener las citas');
+    if(role==='manager'){
+      try {
+        const appointmentsData = await getAppointmentsByWorkerId(token);
+        setAppointments(appointmentsData || []);
+      } catch (error) {
+        alert('Hubo un error al obtener las citas');
+      }
+    } else {
+      try {
+        const appointmentsData = await getAppointmentsByClientId(token);
+        setAppointments(appointmentsData || []);
+      } catch (error) {
+        alert('Hubo un error al obtener las citas');
+      }
     }
   };
 
@@ -127,7 +156,7 @@ const Appointments = () => {
 
   const handleEdit = async (appointmentId, editData) => {
     try {
-      await updateAppointmentById(appointmentId, token, { date: editData.datetime });
+      await updateAppointmentById(appointmentId, token, { date: editData.datetime, status: editData.status });
       getAppointments();
     } catch (error) {
       alert('Hubo un error al intentar actualizar la cita.');
@@ -169,7 +198,7 @@ const Appointments = () => {
         case 'clientId':
           return appointment.client?.id?.toString().includes(searchQuery);
         case 'clientName':
-          return appointment.client?.lastName?.toLowerCase().includes(searchQuery.toLowerCase());
+          return appointment.client?.name?.toLowerCase().includes(searchQuery.toLowerCase());
         case 'serviceName':
           return appointment.service?.name?.toLowerCase().includes(searchQuery.toLowerCase());
         default:
@@ -199,7 +228,7 @@ const Appointments = () => {
       const filtered = workers.filter(worker => worker.workerType === workerType);
       setFilteredWorkers(filtered);
     } else {
-      setFilteredWorkers([]); // Asegúrate de manejar el caso donde workers no es una matriz
+      setFilteredWorkers([]); 
     }
   };
 
@@ -241,6 +270,16 @@ const Appointments = () => {
     }
   };
 
+  const handleRowClick = (appointment) => {
+    setSelectedAppointment(appointment);
+    console.log("un clic");
+    setEditData({
+      datetime: formatDateTime(appointment.date),
+      status: appointment.status
+    });
+    setShowEditModal(true);
+  };
+
   const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -260,7 +299,7 @@ const Appointments = () => {
     return {
       id: appointment.id,
       clientId: appointment.client?.id || '',
-      clientName: appointment.client?.lastName || '',
+      clientName: appointment.client?.name || '',
       serviceName: appointment.service?.name || '',
       datetime: formatDateTime(appointment.date),
     };
@@ -306,7 +345,7 @@ const Appointments = () => {
               <DataTable
                 rows={formattedAppointments}
                 columns={columns}
-                handleUserClick={() => {}}
+                onRowClick={(params) => handleRowClick(params.row)}
               />
             </>
           ) : (
@@ -318,25 +357,54 @@ const Appointments = () => {
           )}
         </Container>
       ) : (
-        <Container className="appointments-list-container">
-          <Row className="justify-content-center">
-            {paginatedAppointments.length > 0 ? (
-              paginatedAppointments.map(appointment => (
-                <Col key={appointment.id} md={6} lg={4}>
-                  <AppointmentCard 
-                    appointment={appointment} 
-                    onDelete={handleDelete} 
-                    onEdit={handleEdit} 
-                  />
+        <>
+          {isMobile ? (
+            <Container className="appointments-list-container">
+              <Carousel interval={null}>
+                {filteredAppointments.map((appointment) => (
+                  <Carousel.Item key={appointment.id}>
+                    <AppointmentCard 
+                      appointment={appointment} 
+                      onDelete={handleDelete} 
+                      onEdit={handleEdit} 
+                    />
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </Container>
+          ) : (
+            <Container className="appointments-list-container">
+              <Row className="justify-content-center">
+                {paginatedAppointments.length > 0 ? (
+                  paginatedAppointments.map(appointment => (
+                    <Col key={appointment.id} md={6} lg={4}>
+                      <AppointmentCard 
+                        appointment={appointment} 
+                        onDelete={handleDelete} 
+                        onEdit={handleEdit} 
+                      />
+                    </Col>
+                  ))
+                ) : (
+                  <Col md={6} lg={4}>
+                    <p>No hay citas {filter === 'future' ? 'futuras' : filter === 'past' ? 'pasadas' : ''}.</p>
+                  </Col>
+                )}
+              </Row>
+            </Container>
+          )}
+          {!isMobile && paginatedAppointments.length === 0 && (
+            <Container className="no-appointments-container">
+              <Row className="justify-content-center">
+                <Col md={6} lg={4}>
+                  <div className="no-appointments-image">
+                    <img src="ruta/a/imagen_placeholder.png" alt="No hay citas" />
+                  </div>
                 </Col>
-              ))
-            ) : (
-              <Col md={6} lg={4}>
-                <p>No hay citas {filter === 'future' ? 'futuras' : filter === 'past' ? 'pasadas' : ''}.</p>
-              </Col>
-            )}
-          </Row>
-        </Container>
+              </Row>
+            </Container>
+          )}
+        </>
       )}
 
       <Modal show={showNewAppointmentModal} onHide={() => setShowNewAppointmentModal(false)}>
@@ -411,11 +479,53 @@ const Appointments = () => {
           </Form>
         </Modal.Body>
       </Modal>
-      <CustomPagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
+
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Cita</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedAppointment && (
+            <Form>
+              <Form.Group controlId="formEditDatetime">
+                <Form.Label>Fecha y Hora</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  name="datetime"
+                  value={editData.datetime}
+                  onChange={(e) => setEditData({ ...editData, datetime: e.target.value })}
+                />
+              </Form.Group>
+              <Form.Group controlId="formEditStatus">
+                <Form.Label>Estado</Form.Label>
+                <Form.Select
+                  name="status"
+                  value={editData.status}
+                  onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+                >
+                  <option value="PENDING">Pendiente</option>
+                  <option value="IN_PROGRESS">En Progreso</option>
+                  <option value="COMPLETED">Completado</option>
+                </Form.Select>
+              </Form.Group>
+              <Button variant="primary" onClick={() => handleEdit(selectedAppointment.id, editData)}>
+                Guardar Cambios
+              </Button>
+              <Button variant="danger" onClick={() => handleDelete(selectedAppointment.id)}>
+                Eliminar
+              </Button>
+            </Form>
+          )}
+        </Modal.Body>
+      </Modal>
+
+      {!isMobile && (
+        <CustomPagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

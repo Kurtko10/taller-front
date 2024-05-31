@@ -79,6 +79,22 @@ export const getAppointmentsByClientId = async (token) => {
       throw error;
   }
 };
+// Ver cita de un usuario 
+
+export const getAppointmentsByWorkerId = async (token) => {
+  try {
+     
+      const config = {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      };
+      const res = await axios.get(`${API_URL}/api/appointments/worker/`, config);    
+      return res.data;
+  } catch (error) {
+      throw error;
+  }
+};
 // Editar citas de un usuario
 export const updateAppointmentById = async (id, token, appointmentData) => {
   try {
@@ -92,7 +108,7 @@ export const updateAppointmentById = async (id, token, appointmentData) => {
     throw error;
   }
 };
-
+// Crear cita
 export const createAppointment = async (appointmentData, token) => {
   try {  
     const response = await axios.post(`${API_URL}/api/appointments`, appointmentData, {
@@ -104,6 +120,20 @@ export const createAppointment = async (appointmentData, token) => {
     return response.data;
   } catch (error) {
 
+    throw error;
+  }
+};
+//Eliminar cita por el usuario
+
+export const deleteAppointmentById = async (id, token) => {
+  try {
+    const response = await axios.delete(`${API_URL}/api/appointments/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };

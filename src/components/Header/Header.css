@@ -54,7 +54,9 @@
   .navbar-nav{
     margin-left: 25%;
   }
-
+#basic-navbar-nav{
+  background-color: rgba(245, 245, 245, 0.869);
+}
   .nav-link:hover{
     color: rgb(255, 255, 255);
   }

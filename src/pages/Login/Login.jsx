@@ -64,7 +64,15 @@ const Login = () => {
         if (uDecodificado.userRole === "admin") {
           navigate("/");
           console.log("soy admin");
-        } else {
+          
+        } else if(uDecodificado.userRole === "manager"){
+          setTimeout(() => {
+            navigate("/profile");
+            console.log("soy manager");
+          }, 4000);
+        }
+        
+        else {
           setTimeout(() => {
             navigate("/profile");
             console.log("soy user");
