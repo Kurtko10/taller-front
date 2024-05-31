@@ -79,3 +79,30 @@ export const getAppointmentsByClientId = async (token) => {
       throw error;
   }
 };
+// Editar citas de un usuario
+export const updateAppointmentById = async (id, token, appointmentData) => {
+  try {
+    const response = await axios.put(`${API_URL}/api/appointments/${id}`, appointmentData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createAppointment = async (appointmentData, token) => {
+  try {  
+    const response = await axios.post(`${API_URL}/api/appointments`, appointmentData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+
+    throw error;
+  }
+};

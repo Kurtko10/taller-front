@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Card, Button, Modal, Form } from 'react-bootstrap';
-//import Pircing from "../../img/pircing.jpg";
-//import Laser from "../../img/laser.jpeg";
+import Mg from "../../img/mecanicageneral.jpeg";
+import Ch from "../../img/chapa.jpg";
 import Mr from "../../img/mecanicarapida.jpg";
-//import Realista from "../../img/realista.jpg";
+import Aa from "../../img/aire.jpeg";
 import "./AppointmentCard.css";
 
 const AppointmentCard = ({ appointment, onDelete, onEdit }) => {
@@ -18,12 +18,12 @@ const AppointmentCard = ({ appointment, onDelete, onEdit }) => {
     switch (serviceName) {
       case "Mecánica Rápida":
         return Mr;
-      case "Realista":
-        return Realista;
-      case "Pircing":
-        return Pircing;
-      case "Laser":
-        return Laser;
+      case "Mecánica General":
+        return Mg;
+      case "Chapa y pintura":
+        return Ch;
+      case "Aire acondicionado":
+        return Aa;
       default:
         return "placeholder.jpg";
     }

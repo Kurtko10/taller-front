@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Modal, Container, Row, Col } from 'react-bootstrap';
-import { getAppointmentsByClientId, bringProfile } from "../../service/apiCalls";
+import { getAppointmentsByClientId,updateAppointmentById,createAppointment, bringProfile } from "../../service/apiCalls";
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
 import { useSelector } from 'react-redux';
 import { getUserData } from "../../app/slices/userSlice";
@@ -292,10 +292,10 @@ const Appointments = () => {
               <Form.Label>Servicio</Form.Label>
               <Form.Select name="service_id" value={formData.service_id} onChange={handleServiceChange} required>
                 <option value="">Selecciona un servicio</option>
-                <option value="1">Black & White</option>
-                <option value="2">Realista</option>
-                <option value="3">Pircing</option>
-                <option value="4">Laser</option>
+                <option value="1">Mecánica General</option>
+                <option value="2">Mecánica Rápida</option>
+                <option value="3">Chapa y pintura</option>
+                <option value="4">Aire acondicionado</option>
               </Form.Select>
             </Form.Group>
             <Form.Group controlId="formDatetime">
