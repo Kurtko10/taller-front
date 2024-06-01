@@ -168,6 +168,18 @@ export const deleteAppointmentById = async (id, token) => {
     throw error;
   }
 };
+// Obtener todas las citas(ADMIN)
+export const getAllAppointments = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/appointments`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all appointments:', error);
+    throw error;
+  }
+};
 
 
 

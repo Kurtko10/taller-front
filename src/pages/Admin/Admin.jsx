@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import HeaderSidebar from '../../components/HeaderSidebar/HeaderSidebar';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import HomeSidebar from '../../components/HomeSidebar/HomeSidebar';
-//import AdminAppointments from '../../components/AdminAppointments/AdminAppointments';
+import AdminAppointments from '../../components/AdminAppointments/AdminAppointments';
 import "./Admin.css";
 
 const Admin = () => {
@@ -31,7 +31,7 @@ const Admin = () => {
         <p>Tu rol es: {userData.decodificado.userRole}</p>
 
         <Routes>
-          {/* <Route path="/appointments" element={<AdminAppointments />} /> */}
+          <Route path="/appointments" element={<AdminAppointments />} />
          
         </Routes>
       </div>
