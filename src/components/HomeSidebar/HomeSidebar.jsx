@@ -39,7 +39,7 @@ function HomeSidebar() {
             <div className='card'>
                 <div className='card-inner'>
                 <a href="/artists">
-                    <h3>ARTISTAS</h3>
+                    <h3>OCASIÓN</h3>
                     <BsFillGrid3X3GapFill className='card_icon'/>
                 </a>
             

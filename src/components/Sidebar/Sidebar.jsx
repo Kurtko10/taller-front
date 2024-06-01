@@ -32,7 +32,7 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
         </li>
         <li className='sidebar-list-item'>
           <a href="/artists">
-            <BsFillGrid3X3GapFill className='icon' /> <span>ARTISTAS</span>
+            <BsFillGrid3X3GapFill className='icon' /> <span>OCASIÓN</span>
           </a>
         </li>
         <li className='sidebar-list-item'>

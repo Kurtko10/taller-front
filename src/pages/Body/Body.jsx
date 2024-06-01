@@ -4,7 +4,9 @@ import Login from "../Login/Login";
 import { Register } from "../Register/Register";
 import { Profile } from "../Profile/Profile";
 import Appointments from "../Appointments/Appointments";
+import Admin from "../Admin/Admin";
 import UserCars from "../../components/CarComponent/CarComponent";
+import { AdminRoute } from "../../components/AdminRoute/AdminRoute";
 import "./Body.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -20,7 +22,7 @@ export const Body = () => {
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/user-cars" component={UserCars} />
         
-        
+        <Route path="/admin/*" element={<AdminRoute Component={Admin} />} />
       </Routes>
     </>
   );
