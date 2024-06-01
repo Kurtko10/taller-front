@@ -29,6 +29,9 @@
   width: 100%;
   height: 150px;
 }
+row{
+  cursor: pointer;
+}
 
 @media (max-width: 767px) {
   .appointments-container {

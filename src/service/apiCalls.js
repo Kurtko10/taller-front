@@ -95,6 +95,20 @@ export const getAppointmentsByWorkerId = async (token) => {
       throw error;
   }
 };
+// Ver cita por Id
+export const getAppointmentById = async (id, token) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/appointments/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener la cita:', error);
+    throw error;
+  }
+};
 // Editar citas de un usuario
 export const updateAppointmentById = async (id, token, appointmentData) => {
   try {

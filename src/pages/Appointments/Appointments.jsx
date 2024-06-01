@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Modal, Container, Row, Col, Table, Carousel } from 'react-bootstrap';
-import { getAppointmentsByClientId, getAppointmentsByWorkerId, updateAppointmentById, createAppointment, deleteAppointmentById, bringProfile, getUserCars, getUsersByManagerRole } from "../../service/apiCalls"; 
+import { getAppointmentsByClientId, getAppointmentsByWorkerId, updateAppointmentById, createAppointment, deleteAppointmentById, bringProfile, getUserCars, getUsersByManagerRole, getAppointmentById } from "../../service/apiCalls"; 
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
 import { useSelector } from 'react-redux';
 import { getUserData } from "../../app/slices/userSlice";
@@ -10,7 +10,7 @@ import SocialIcons from "../../components/SocialIcons/SocialIcons";
 import { CustomInput } from "../../components/CusstomInput/CustomInput";
 import SearchInput from '../../components/SearchInput/SearchInput';
 import DataTable from '../../components/Table/Table';
-import CustomPagination from '../../components/Pagination/Pagination';
+import Pagination from '../../components/Pagination/Pagination';
 import './Appointments.css';
 
 const serviceWorkerMap = {
@@ -50,6 +50,7 @@ const Appointments = () => {
   const [editData, setEditData] = useState({
     datetime: "",
     status: "",
+    observations: ""
   });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -149,6 +150,7 @@ const Appointments = () => {
 
       await deleteAppointmentById(appointmentId, token);
       getAppointments();
+      setShowEditModal(false); // Cerrar el modal después de eliminar
     } catch (error) {
       alert('Hubo un error al intentar eliminar la cita.');
     }
@@ -156,8 +158,9 @@ const Appointments = () => {
 
   const handleEdit = async (appointmentId, editData) => {
     try {
-      await updateAppointmentById(appointmentId, token, { date: editData.datetime, status: editData.status });
+      await updateAppointmentById(appointmentId, token, { date: editData.datetime, status: editData.status, observations: editData.observations });
       getAppointments();
+      setShowEditModal(false); // Cerrar el modal después de actualizar
     } catch (error) {
       alert('Hubo un error al intentar actualizar la cita.');
     }
@@ -270,14 +273,21 @@ const Appointments = () => {
     }
   };
 
-  const handleRowClick = (appointment) => {
-    setSelectedAppointment(appointment);
-    console.log("un clic");
-    setEditData({
-      datetime: formatDateTime(appointment.date),
-      status: appointment.status
-    });
-    setShowEditModal(true);
+  const handleRowClick = async (appointment) => {
+    try {
+      const fullAppointment = await getAppointmentById(appointment.id, token);
+      setSelectedAppointment(fullAppointment);
+      console.log("Un clic en la fila:", fullAppointment); // Añadir un log para verificar el clic
+      setEditData({
+        datetime: formatDateTime(fullAppointment.date),
+        status: fullAppointment.status,
+        observations: fullAppointment.observations || ""
+      });
+      setShowEditModal(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles de la cita:", error);
+      alert('Hubo un error al obtener los detalles de la cita.');
+    }
   };
 
   const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
@@ -296,13 +306,29 @@ const Appointments = () => {
   ];
 
   const formattedAppointments = filteredAppointments.map(appointment => {
-    return {
-      id: appointment.id,
-      clientId: appointment.client?.id || '',
-      clientName: appointment.client?.name || '',
-      serviceName: appointment.service?.name || '',
-      datetime: formatDateTime(appointment.date),
-    };
+    if(role==="maager"){
+      return {
+        id: appointment.id,
+        clientId: appointment.client.id,
+        clientName: appointment.client.name,
+        serviceName: appointment.service.name,
+        datetime: formatDateTime(appointment.date),
+        status: appointment.status,
+        observations: appointment.observations,
+        service: appointment.service,
+        client: appointment.client,
+        car: appointment.car
+      }
+    }else{
+      return {
+              id: appointment.id,
+              clientId: appointment.client?.id || '',
+              clientName: appointment.client?.name || '',
+              serviceName: appointment.service?.name || '',
+              datetime: formatDateTime(appointment.date),
+            };
+    }
+    
   });
 
   return (
@@ -345,7 +371,7 @@ const Appointments = () => {
               <DataTable
                 rows={formattedAppointments}
                 columns={columns}
-                onRowClick={(params) => handleRowClick(params.row)}
+                onRowClick={handleRowClick} // Pasar la función de clic
               />
             </>
           ) : (
@@ -482,11 +508,29 @@ const Appointments = () => {
 
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Editar Cita</Modal.Title>
+          <Modal.Title>Editar Cita - ID: {selectedAppointment?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedAppointment && (
             <Form>
+              <Row>
+                <Col>
+                  <Form.Group controlId="formEditClient">
+                    <Form.Label>Cliente:</Form.Label>
+                    <p>ID: {selectedAppointment.client.id}</p>
+                    <p>Nombre: {selectedAppointment.client.name}</p>
+                    <p>Teléfono: {selectedAppointment.client.phone}</p>
+                  </Form.Group>
+                </Col>
+                <Col>
+                  <Form.Group controlId="formEditCar">
+                    <Form.Label>Vehículo:</Form.Label>
+                    <p>Marca: {selectedAppointment.car.carBrand}</p>
+                    <p>Modelo: {selectedAppointment.car.model}</p>
+                    <p>Matrícula: {selectedAppointment.car.licensePlate}</p>
+                  </Form.Group>
+                </Col>
+              </Row>
               <Form.Group controlId="formEditDatetime">
                 <Form.Label>Fecha y Hora</Form.Label>
                 <Form.Control
@@ -494,6 +538,17 @@ const Appointments = () => {
                   name="datetime"
                   value={editData.datetime}
                   onChange={(e) => setEditData({ ...editData, datetime: e.target.value })}
+                />
+              </Form.Group>
+              <Form.Group controlId="formEditObservations">
+                <Form.Label>Observaciones</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  name="observations"
+                  value={editData.observations}
+                  onChange={(e) => setEditData({ ...editData, observations: e.target.value })}
+                  maxLength="255"
+                  rows={3}
                 />
               </Form.Group>
               <Form.Group controlId="formEditStatus">
@@ -517,10 +572,17 @@ const Appointments = () => {
             </Form>
           )}
         </Modal.Body>
+        <Modal.Footer>
+          {selectedAppointment && (
+            <>
+              <p>Trabajador: {selectedAppointment.worker.name} ({selectedAppointment.worker.phone})</p>
+            </>
+          )}
+        </Modal.Footer>
       </Modal>
 
       {!isMobile && (
-        <CustomPagination
+        <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={handlePageChange}
@@ -531,4 +593,5 @@ const Appointments = () => {
 };
 
 export default Appointments;
+
 

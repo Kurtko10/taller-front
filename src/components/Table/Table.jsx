@@ -1,7 +1,7 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 
-const DataTable = ({ rows, columns, renderActions }) => {
+const DataTable = ({ rows, columns, renderActions, onRowClick }) => {
   return (
     <Table striped bordered hover>
       <thead>
@@ -13,7 +13,11 @@ const DataTable = ({ rows, columns, renderActions }) => {
       </thead>
       <tbody>
         {rows.map((row) => (
-          <tr key={row.id}>
+          <tr 
+            key={row.id} 
+            onClick={() => onRowClick(row)}
+            style={{ cursor: 'pointer' }}
+          >
             {columns.map((column) => (
               <td key={`${row.id}-${column.field}`}>
                 {column.field === 'actions' ? (
