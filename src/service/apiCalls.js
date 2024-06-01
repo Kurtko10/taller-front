@@ -190,3 +190,15 @@ export const getUserCars = async (token, userId) => {
   }
 };
 
+// Añadir vehículo
+export const addUserCar = async (token, carData) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.post(`${API_URL}/api/cars/userCars`, carData, config);
+  console.log(res);
+  return res.data;
+};
+

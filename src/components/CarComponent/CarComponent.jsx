@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../Table/Table';
-import { getUserCars } from '../../service/apiCalls';
+import { getUserCars, addUserCar } from '../../service/apiCalls';
+import { useSelector } from 'react-redux';
+import { Modal, Button, Form } from 'react-bootstrap';
 
 const UserCars = ({ userId, token }) => {
   const [cars, setCars] = useState([]);
+  const [showAddCarModal, setShowAddCarModal] = useState(false);
+  const [newCar, setNewCar] = useState({
+    licensePlate: '',
+    carBrand: '',
+    model: '',
+    year: '',
+    userId: '', 
+  });
+
+  const role = useSelector((state) => state.user.role);
 
   useEffect(() => {
     console.log('UserCars mounted with userId:', userId);
@@ -24,6 +36,27 @@ const UserCars = ({ userId, token }) => {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCar((prevCar) => ({
+      ...prevCar,
+      [name]: value,
+    }));
+  };
+
+  const handleAddCar = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await addUserCar(token, newCar);
+      console.log('Car added successfully:', response);
+      setShowAddCarModal(false);
+      fetchUserCars(); // Refrescar la lista de coches
+    } catch (error) {
+      console.error('Error adding car:', error);
+      alert('Error al añadir el vehículo');
+    }
+  };
+
   const columns = [
     { field: 'id', headerName: 'ID' },
     { field: 'licensePlate', headerName: 'Matrícula' },
@@ -36,10 +69,83 @@ const UserCars = ({ userId, token }) => {
     <div className="user-cars-container">
       <h1>Mis Vehículos</h1>
       {cars.length > 0 ? (
-        <DataTable rows={cars} columns={columns} renderActions={() => null} />
+        <>
+          <DataTable rows={cars} columns={columns} renderActions={() => null} />
+          <Button onClick={() => setShowAddCarModal(true)}>Añadir Vehículo</Button>
+        </>
       ) : (
-        <p>No tienes vehículos registrados.</p>
+        <>
+          <p>No tienes vehículos registrados.</p>
+          <Button onClick={() => setShowAddCarModal(true)}>Añadir Vehículo</Button>
+        </>
       )}
+      
+      <Modal show={showAddCarModal} onHide={() => setShowAddCarModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Añadir Vehículo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleAddCar}>
+            <Form.Group controlId="formLicensePlate">
+              <Form.Label>Matrícula</Form.Label>
+              <Form.Control
+                type="text"
+                name="licensePlate"
+                value={newCar.licensePlate}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formCarBrand">
+              <Form.Label>Marca</Form.Label>
+              <Form.Control
+                type="text"
+                name="carBrand"
+                value={newCar.carBrand}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formModel">
+              <Form.Label>Modelo</Form.Label>
+              <Form.Control
+                type="text"
+                name="model"
+                value={newCar.model}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formYear">
+              <Form.Label>Año</Form.Label>
+              <Form.Control
+                type="number"
+                name="year"
+                value={newCar.year}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            {(role === 'manager' || role === 'admin') && (
+              <Form.Group controlId="formUserId">
+                <Form.Label>User ID</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="userId"
+                  value={newCar.userId}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+            )}
+            <Button variant="primary" type="submit">
+              Guardar
+            </Button>
+            <Button variant="secondary" onClick={() => setShowAddCarModal(false)}>
+              Cancelar
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
