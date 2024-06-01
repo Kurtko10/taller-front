@@ -41,6 +41,27 @@ export const registerNewUserCall = async (credentials) => {
 
 
 //------------ USUARIOS--------
+// Obtener todos los perfiles de usuarios
+export const getAllUserProfiles = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.get(`${API_URL}/api/users`, config);
+  return res.data;
+};
+// Crear nuevo usuario
+export const createNewUserCall = async (userData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.post(`${API_URL}/api/users`, userData, config);
+  return res.data;
+};
+
 // Ver usuario con Role Manager
 export const getUsersByManagerRole = async () => {
   try {
@@ -64,6 +85,27 @@ export const bringProfile = async (token) => {
   return res;
   
 };
+// Eliminar usuario por ID
+export const deleteUserById = async (userId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.delete(`${API_URL}/api/users/${userId}`, config);
+  return res.data;
+};
+
+// Actualizar perfil de usuario
+export const updateUserProfile = async (userId, userData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.put(`${API_URL}/api/users/${userId}`, userData, config);
+  return res.data;
+};
 
 // Editar perfil
 export const updateProfile = async (data, token) => {
@@ -74,6 +116,16 @@ export const updateProfile = async (data, token) => {
   }
   const res = await axios.put(`${API_URL}/api/users/profile/profile`, data, config)
   return res
+};
+// Obtener usuario por ID
+export const getUserById = async (userId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.get(`${API_URL}/api/users/${userId}`, config);
+  return res.data;
 };
 
 

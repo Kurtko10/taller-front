@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dicebear/avatars": "^4.10.8",
+    "@dicebear/avatars-initials-sprites": "^4.10.8",
     "@mui/x-data-grid": "^7.4.0",
     "@reduxjs/toolkit": "^2.2.4",
     "axios": "^1.6.8",

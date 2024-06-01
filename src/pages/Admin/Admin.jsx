@@ -6,6 +6,7 @@ import HeaderSidebar from '../../components/HeaderSidebar/HeaderSidebar';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import HomeSidebar from '../../components/HomeSidebar/HomeSidebar';
 import AdminAppointments from '../../components/AdminAppointments/AdminAppointments';
+import Users from '../../components/Users/Users';
 import "./Admin.css";
 
 const Admin = () => {
@@ -31,6 +32,7 @@ const Admin = () => {
         <p>Tu rol es: {userData.decodificado.userRole}</p>
 
         <Routes>
+        <Route path="/users" element={<Users />} />
           <Route path="/appointments" element={<AdminAppointments />} />
          
         </Routes>

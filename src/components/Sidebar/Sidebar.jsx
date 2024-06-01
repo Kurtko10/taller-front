@@ -26,7 +26,7 @@ function Sidebar({ openSidebarToggle, OpenSidebar }) {
           </span>
         </li>
         <li className='sidebar-list-item'>
-          <a href="/users">
+          <a href="/admin/users">
             <BsPeopleFill className='icon' /> <span>USUARIOS</span>
           </a>
         </li>
