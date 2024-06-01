@@ -3,12 +3,12 @@ import axios from "axios";
 
 const API_URL = "http://localhost:3010"
 
+//------------------AUTH-------
 // Login de usuario
 export const loginCall = async (credentials) => {
     const res = await axios.post(`${API_URL}/api/auth/login`, credentials);
     
     return res;
-
 };
 // Registro
 export const registerNewUserCall = async (credentials) => {
@@ -38,6 +38,20 @@ export const registerNewUserCall = async (credentials) => {
     }
   }
 };
+
+
+//------------ USUARIOS--------
+// Ver usuario con Role Manager
+export const getUsersByManagerRole = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/api/users/role/managers`);
+    return Array.isArray(res.data) ? res.data : []; // Asegúrate de devolver una matriz
+  } catch (error) {
+    console.error('Error al obtener los trabajadores con rol de manager', error);
+    throw error; // Lanza el error para que pueda ser manejado en el componente
+  }
+};
+
 // Ver perfil de usuario
 export const bringProfile = async (token) => {
   const config = {
@@ -52,7 +66,6 @@ export const bringProfile = async (token) => {
 };
 
 // Editar perfil
-
 export const updateProfile = async (data, token) => {
   const config = {
     headers: {
@@ -63,8 +76,9 @@ export const updateProfile = async (data, token) => {
   return res
 };
 
-// Ver cita de un usuario 
 
+//--------------CITAS------------
+// Ver cita de un usuario (pendiente de adaptar para admin y manager tambien)
 export const getAppointmentsByClientId = async (token) => {
   try {
      
@@ -79,8 +93,8 @@ export const getAppointmentsByClientId = async (token) => {
       throw error;
   }
 };
-// Ver cita de un usuario 
 
+// Ver cita de un usuario 
 export const getAppointmentsByWorkerId = async (token) => {
   try {
      
@@ -95,6 +109,7 @@ export const getAppointmentsByWorkerId = async (token) => {
       throw error;
   }
 };
+
 // Ver cita por Id
 export const getAppointmentById = async (id, token) => {
   try {
@@ -109,7 +124,8 @@ export const getAppointmentById = async (id, token) => {
     throw error;
   }
 };
-// Editar citas de un usuario
+
+// Editar cita 
 export const updateAppointmentById = async (id, token, appointmentData) => {
   try {
     const response = await axios.put(`${API_URL}/api/appointments/${id}`, appointmentData, {
@@ -122,6 +138,7 @@ export const updateAppointmentById = async (id, token, appointmentData) => {
     throw error;
   }
 };
+
 // Crear cita
 export const createAppointment = async (appointmentData, token) => {
   try {  
@@ -137,8 +154,8 @@ export const createAppointment = async (appointmentData, token) => {
     throw error;
   }
 };
-//Eliminar cita por el usuario
 
+//Eliminar cita
 export const deleteAppointmentById = async (id, token) => {
   try {
     const response = await axios.delete(`${API_URL}/api/appointments/${id}`, {
@@ -153,6 +170,10 @@ export const deleteAppointmentById = async (id, token) => {
 };
 
 
+
+
+//--------------------VEHICULOS-------
+// Ver vehículos del usuario
 export const getUserCars = async (token, userId) => {
   console.log('getUserCars called with userId:', userId);
   try {
@@ -168,15 +189,4 @@ export const getUserCars = async (token, userId) => {
     throw error;
   }
 };
-
-export const getUsersByManagerRole = async () => {
-  try {
-    const res = await axios.get(`${API_URL}/api/users/role/managers`);
-    return Array.isArray(res.data) ? res.data : []; // Asegúrate de devolver una matriz
-  } catch (error) {
-    console.error('Error al obtener los trabajadores con rol de manager', error);
-    throw error; // Lanza el error para que pueda ser manejado en el componente
-  }
-};
-
 
