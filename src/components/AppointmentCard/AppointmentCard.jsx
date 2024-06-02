@@ -105,8 +105,8 @@ const AppointmentCard = ({ appointment, onDelete, onEdit }) => {
           <br />
           Mecánico: {appointment.worker.name}
           <br />
-          Coche: {appointment.car.carBrand} {appointment.car.model} 
-          <br />({appointment.car.year})
+          Coche: {appointment.car?.carBrand} {appointment.car?.model}
+          <br />({appointment.car?.year})
           <br />
           Estado: {appointment.status}
         </Card.Text>
