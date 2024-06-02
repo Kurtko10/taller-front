@@ -51,6 +51,7 @@ export const getAllUserProfiles = async (token) => {
   const res = await axios.get(`${API_URL}/api/users`, config);
   return res.data;
 };
+
 // Crear nuevo usuario
 export const createNewUserCall = async (userData, token) => {
   const config = {
@@ -83,8 +84,8 @@ export const bringProfile = async (token) => {
   const res = await axios.get(`${API_URL}/api/users/profile/profile`, config);
 
   return res;
-  
 };
+
 // Eliminar usuario por ID
 export const deleteUserById = async (userId, token) => {
   const config = {
@@ -220,6 +221,7 @@ export const deleteAppointmentById = async (id, token) => {
     throw error;
   }
 };
+
 // Obtener todas las citas(ADMIN)
 export const getAllAppointments = async (token) => {
   try {
@@ -232,9 +234,6 @@ export const getAllAppointments = async (token) => {
     throw error;
   }
 };
-
-
-
 
 //--------------------VEHICULOS-------
 // Ver vehículos del usuario
@@ -263,6 +262,17 @@ export const addUserCar = async (token, carData) => {
   };
   const res = await axios.post(`${API_URL}/api/cars/userCars`, carData, config);
   console.log(res);
+  return res.data;
+};
+
+// Eliminar vehículo
+export const deleteUserCar = async (token, carId) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.delete(`${API_URL}/api/cars/userCars/${carId}`, config);
   return res.data;
 };
 

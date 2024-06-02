@@ -277,7 +277,7 @@ const Appointments = () => {
     try {
       const fullAppointment = await getAppointmentById(appointment.id, token);
       setSelectedAppointment(fullAppointment);
-      console.log("Un clic en la fila:", fullAppointment); // Añadir un log para verificar el clic
+      console.log("Un clic en la fila:", fullAppointment); 
       setEditData({
         datetime: formatDateTime(fullAppointment.date),
         status: fullAppointment.status,

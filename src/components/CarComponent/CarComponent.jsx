@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../Table/Table';
-import { getUserCars, addUserCar } from '../../service/apiCalls';
+import { getUserCars, addUserCar, deleteUserCar } from '../../service/apiCalls';
 import { useSelector } from 'react-redux';
 import { Modal, Button, Form } from 'react-bootstrap';
 
 const UserCars = ({ userId, token }) => {
   const [cars, setCars] = useState([]);
+  const [selectedCar, setSelectedCar] = useState(null);
   const [showAddCarModal, setShowAddCarModal] = useState(false);
+  const [showCarDetailsModal, setShowCarDetailsModal] = useState(false);
   const [newCar, setNewCar] = useState({
     licensePlate: '',
     carBrand: '',
     model: '',
     year: '',
-    userId: '', 
+    userId: '',
   });
 
   const role = useSelector((state) => state.user.role);
@@ -57,6 +59,26 @@ const UserCars = ({ userId, token }) => {
     }
   };
 
+  const handleRowClick = (car) => {
+    setSelectedCar(car);
+    setShowCarDetailsModal(true);
+  };
+
+  const handleDeleteCar = async () => {
+    const confirmDelete = window.confirm('¿Seguro que deseas eliminar este vehículo?');
+    if (!confirmDelete) return;
+
+    try {
+      await deleteUserCar(token, selectedCar.id);
+      console.log('Car deleted successfully');
+      setShowCarDetailsModal(false);
+      fetchUserCars(); // Refrescar la lista de coches
+    } catch (error) {
+      console.error('Error deleting car:', error);
+      alert('Error al eliminar el vehículo');
+    }
+  };
+
   const columns = [
     { field: 'id', headerName: 'ID' },
     { field: 'licensePlate', headerName: 'Matrícula' },
@@ -70,7 +92,7 @@ const UserCars = ({ userId, token }) => {
       <h1>Mis Vehículos</h1>
       {cars.length > 0 ? (
         <>
-          <DataTable rows={cars} columns={columns} renderActions={() => null} />
+          <DataTable rows={cars} columns={columns} onRowClick={handleRowClick} renderActions={() => null} />
           <Button onClick={() => setShowAddCarModal(true)}>Añadir Vehículo</Button>
         </>
       ) : (
@@ -146,6 +168,29 @@ const UserCars = ({ userId, token }) => {
           </Form>
         </Modal.Body>
       </Modal>
+
+      {selectedCar && (
+        <Modal show={showCarDetailsModal} onHide={() => setShowCarDetailsModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Detalles del Vehículo</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p><strong>ID:</strong> {selectedCar.id}</p>
+            <p><strong>Matrícula:</strong> {selectedCar.licensePlate}</p>
+            <p><strong>Marca:</strong> {selectedCar.carBrand}</p>
+            <p><strong>Modelo:</strong> {selectedCar.model}</p>
+            <p><strong>Año:</strong> {selectedCar.year}</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" onClick={handleDeleteCar}>
+              Eliminar
+            </Button>
+            <Button variant="secondary" onClick={() => setShowCarDetailsModal(false)}>
+              Cerrar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </div>
   );
 };
