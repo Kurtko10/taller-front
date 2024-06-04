@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
-import { getAllAppointments, deleteAppointmentById, updateAppointmentById, createAppointment } from '../../service/apiCalls';
+import { getAllAppointments, deleteAppointmentById, updateAppointmentById, createAppointment, getAllUserProfiles, getUserCarById} from '../../service/apiCalls';
 import SearchInput from '../../components/SearchInput/SearchInput';
 import DataTable from '../../components/Table/Table';
 import { useSelector } from 'react-redux';
@@ -21,10 +21,12 @@ const AdminAppointments = () => {
     status: "",
     observations: "",
     service_id: "",
-    user_id_client: "",
     user_id_worker: "",
+    user_id_client: "",
     car_id: ""
   });
+  const [users, setUsers] = useState([]);
+  const [cars, setCars] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const userReduxData = useSelector(getUserData);
@@ -58,18 +60,22 @@ const AdminAppointments = () => {
   const handleEdit = async (appointmentId, editData) => {
     try {
       const dateUTC = new Date(editData.date).toISOString();
-      await updateAppointmentById(appointmentId, token, {
+      const payload = {
         date: dateUTC,
         status: editData.status,
         observations: editData.observations,
         service_id: editData.service_id,
-        user_id_client: editData.user_id_client,
         user_id_worker: editData.user_id_worker,
         car_id: editData.car_id
-      });
+      };
+
+      console.log('Payload:', payload);
+
+      await updateAppointmentById(appointmentId, token, payload);
       getAppointments();
       setShowModal(false);
     } catch (error) {
+      console.error('Error updating appointment:', error);
       alert('Hubo un error al intentar actualizar la cita.');
     }
   };
@@ -86,7 +92,7 @@ const AdminAppointments = () => {
     setSearchCriteria(e.target.value);
   };
 
-  const handleOpenModal = (appointment, isCreating = false) => {
+  const handleOpenModal = async (appointment, isCreating = false) => {
     if (!isCreating) {
       const selectedAppointment = appointments.find(appt => appt.id === appointment.id);
       if (selectedAppointment) {
@@ -99,9 +105,9 @@ const AdminAppointments = () => {
           status: selectedAppointment.status,
           observations: selectedAppointment.observations,
           service_id: selectedAppointment.service.id,
-          user_id_client: selectedAppointment.client.id,
           user_id_worker: selectedAppointment.worker.id,
-          car_id: selectedAppointment.car.id
+          user_id_client: selectedAppointment.client.id,
+          car_id: selectedAppointment.car ? selectedAppointment.car.id : ""
         });
 
         setFormData({
@@ -109,10 +115,12 @@ const AdminAppointments = () => {
           status: selectedAppointment.status,
           observations: selectedAppointment.observations,
           service_id: selectedAppointment.service.id,
-          user_id_client: selectedAppointment.client.id,
           user_id_worker: selectedAppointment.worker.id,
-          car_id: selectedAppointment.car.id
+          user_id_client: selectedAppointment.client.id,
+          car_id: selectedAppointment.car ? selectedAppointment.car.id : ""
         });
+
+        fetchCars(selectedAppointment.client.id);
       }
     } else {
       setSelectedAppointment({
@@ -120,8 +128,8 @@ const AdminAppointments = () => {
         status: "",
         observations: "",
         service_id: "",
-        user_id_client: "",
         user_id_worker: "",
+        user_id_client: "",
         car_id: ""
       });
       setFormData({
@@ -129,11 +137,15 @@ const AdminAppointments = () => {
         status: "",
         observations: "",
         service_id: "",
-        user_id_client: "",
         user_id_worker: "",
+        user_id_client: "",
         car_id: ""
       });
     }
+
+    // Cargar todos los perfiles de usuarios
+    await fetchUsers();
+
     setShowModal(true);
     setShowNewAppointmentModal(isCreating);
   };
@@ -149,7 +161,7 @@ const AdminAppointments = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: name === 'user_id_client' || name === 'user_id_worker' || name === 'car_id' ? Number(value) : value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleCreateAppointment = async () => {
@@ -162,6 +174,32 @@ const AdminAppointments = () => {
     }
   };
 
+  const fetchUsers = async () => {
+    try {
+      const usersData = await getAllUserProfiles(token);
+      setUsers(usersData);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      alert('Error al obtener los perfiles de usuario.');
+    }
+  };
+
+  const fetchCars = async (userId) => {
+    try {
+      const carsData = await getUserCarById(userId, token);
+      setCars(carsData.cars);
+    } catch (error) {
+      console.error('Error fetching cars:', error);
+      alert('Error al obtener los vehículos del usuario.');
+    }
+  };
+
+  const handleUserChange = (e) => {
+    const userId = e.target.value;
+    setFormData(prev => ({ ...prev, user_id_client: userId }));
+    fetchCars(userId);
+  };
+
   const columns = [
     { field: 'id', headerName: 'ID Cita' },
     { field: 'clientId', headerName: 'ID Cliente' },
@@ -169,6 +207,8 @@ const AdminAppointments = () => {
     { field: 'workerName', headerName: 'Trabajador' },
     { field: 'serviceName', headerName: 'Servicio' },
     { field: 'date', headerName: 'Fecha y Hora' },
+    { field: 'carId', headerName: 'ID Coche' },
+    { field: 'carLicensePlate', headerName: 'Matrícula' },
     { field: 'actions', headerName: 'Acciones' }
   ];
 
@@ -185,6 +225,8 @@ const AdminAppointments = () => {
       hour: '2-digit',
       minute: '2-digit',
     }),
+    carId: appointment.car ? appointment.car.id : 'N/A',
+    carLicensePlate: appointment.car ? appointment.car.licensePlate : 'N/A',
     details: 'Detalles'
   }));
 
@@ -206,6 +248,10 @@ const AdminAppointments = () => {
           return appointment.workerName.toLowerCase().includes(searchQuery.toLowerCase());
         case 'serviceName':
           return appointment.serviceName.toLowerCase().includes(searchQuery.toLowerCase());
+        case 'carId':
+          return appointment.carId.toString().includes(searchQuery);
+        case 'carLicensePlate':
+          return appointment.carLicensePlate.toLowerCase().includes(searchQuery.toLowerCase());
         default:
           return false;
       }
@@ -238,6 +284,8 @@ const AdminAppointments = () => {
             <option value="clientName">Cliente</option>
             <option value="workerName">Trabajador</option>
             <option value="serviceName">Servicio</option>
+            <option value="carId">ID Coche</option>
+            <option value="carLicensePlate">Matrícula</option>
           </Form.Control>
         </Form.Group>
         <SearchInput
@@ -283,18 +331,36 @@ const AdminAppointments = () => {
           <Modal.Body>
             {selectedAppointment && (
               <Form>
-                {showNewAppointmentModal && (
-                  <Form.Group controlId="formClientId">
-                    <Form.Label>ID Cliente</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="user_id_client"
-                      value={formData.user_id_client}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </Form.Group>
-                )}
+                <Form.Group controlId="formClientId">
+                  <Form.Label>Cliente</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="user_id_client"
+                    value={formData.user_id_client}
+                    onChange={handleUserChange}
+                    required
+                  >
+                    <option value="">Seleccione un cliente</option>
+                    {users.map(user => (
+                      <option key={user.id} value={user.id}>{user.id}{user.firstName}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="formCarId">
+                  <Form.Label>Coche</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="car_id"
+                    value={formData.car_id}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Seleccione un coche</option>
+                    {cars.map(car => (
+                      <option key={car.id} value={car.id}>{car.licensePlate}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
                 <Form.Group controlId="formDatetime">
                   <Form.Label>Fecha y Hora</Form.Label>
                   <Form.Control
@@ -345,16 +411,6 @@ const AdminAppointments = () => {
                     required
                   />
                 </Form.Group>
-                <Form.Group controlId="formCarId">
-                  <Form.Label>ID Coche</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="car_id"
-                    value={formData.car_id}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
                 {showNewAppointmentModal ? (
                   <Button variant="primary" onClick={handleCreateAppointment}>
                     Crear Cita
@@ -374,3 +430,4 @@ const AdminAppointments = () => {
 };
 
 export default AdminAppointments;
+

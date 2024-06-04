@@ -18,9 +18,10 @@
   height: 100vh;
 }
 .usersView{
+  position:relative;
   margin-top: 5em;
   justify-self: center;
-  width: 100%;
+  width: 80%;
   margin-left: 5%;
 }
 

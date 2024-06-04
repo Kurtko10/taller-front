@@ -11,7 +11,7 @@ import { getUserData } from "../../app/slices/userSlice";
 import { UserDetailsModal } from "../../components/UserModal/UserDetailsModal";
 import { useNavigate } from "react-router-dom";
 import DataTable from "../../components/Table/Table";
-import { Pagination } from "react-bootstrap";
+import CustomPagination from "../Pagination/Pagination"; 
 import SearchInput from "../../components/SearchInput/SearchInput";
 import { ButtonC } from "../../components/ButtonC/ButtonC";
 import "./Users.css";
@@ -174,17 +174,11 @@ const Users = () => {
         token={token}
         role={role}
       />
-      <Pagination className="mt-3">
-        <Pagination.First onClick={() => handlePageChange(1)} />
-        <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-        {Array.from({ length: Math.ceil(userProfiles.length / profilesPerPage) }).map((_, index) => (
-          <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => handlePageChange(index + 1)}>
-            {index + 1}
-          </Pagination.Item>
-        ))}
-        <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === Math.ceil(userProfiles.length / profilesPerPage)} />
-        <Pagination.Last onClick={() => handlePageChange(Math.ceil(userProfiles.length / profilesPerPage))} />
-      </Pagination>
+      <CustomPagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(userProfiles.length / profilesPerPage)}
+        onPageChange={handlePageChange}
+      />
       <ButtonC
         title={"Nuevo Usuario"}
         className={"regularButtonClass newUser"}
