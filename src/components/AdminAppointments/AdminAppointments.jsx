@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
-import { getAllAppointments, deleteAppointmentById, updateAppointmentById, createAppointment, getAllUserProfiles, getUserCarById} from '../../service/apiCalls';
+import { getAllAppointments, deleteAppointmentById, updateAppointmentById, createAppointment, getAllUserProfiles, getUserCarById, getUsersByManagerRole } from '../../service/apiCalls';
 import SearchInput from '../../components/SearchInput/SearchInput';
 import DataTable from '../../components/Table/Table';
 import { useSelector } from 'react-redux';
 import { getUserData } from '../../app/slices/userSlice';
 import CustomPagination from '../../components/Pagination/Pagination';
 import './AdminAppointments.css';
+
+const serviceWorkerMap = {
+  '1': 'mechanic', // General Mechanic
+  '2': 'quick_service', // Quick Mechanic
+  '3': 'bodyworker', // Bodywork Painting
+  '4': 'painter', // Air Conditioning
+};
 
 const AdminAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -27,6 +34,9 @@ const AdminAppointments = () => {
   });
   const [users, setUsers] = useState([]);
   const [cars, setCars] = useState([]);
+  const [workers, setWorkers] = useState([]);
+  const [allWorkers, setAllWorkers] = useState([]); // Lista completa de trabajadores
+  const [filteredWorkers, setFilteredWorkers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const userReduxData = useSelector(getUserData);
@@ -34,6 +44,8 @@ const AdminAppointments = () => {
 
   useEffect(() => {
     getAppointments();
+    fetchUsers();
+    fetchAllWorkers();
   }, []);
 
   const getAppointments = async () => {
@@ -42,6 +54,38 @@ const AdminAppointments = () => {
       setAppointments(appointmentsData);
     } catch (error) {
       alert('Error al obtener las citas.');
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const usersData = await getAllUserProfiles(token);
+      setUsers(usersData);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      alert('Error al obtener los perfiles de usuario.');
+    }
+  };
+
+  const fetchCars = async (userId) => {
+    try {
+      const carsData = await getUserCarById(userId, token);
+      setCars(carsData.cars);
+    } catch (error) {
+      console.error('Error fetching cars:', error);
+      alert('Error al obtener los vehículos del usuario.');
+    }
+  };
+
+  const fetchAllWorkers = async () => {
+    try {
+      const workersData = await getUsersByManagerRole();
+      setAllWorkers(workersData); 
+      setFilteredWorkers(workersData);
+      console.log('Workers fetched:', workersData);
+    } catch (error) {
+      console.error('Error fetching workers:', error);
+      alert('Error al obtener los trabajadores.');
     }
   };
 
@@ -73,7 +117,7 @@ const AdminAppointments = () => {
 
       await updateAppointmentById(appointmentId, token, payload);
       getAppointments();
-      setShowModal(false);
+      handleCloseModal();
     } catch (error) {
       console.error('Error updating appointment:', error);
       alert('Hubo un error al intentar actualizar la cita.');
@@ -123,28 +167,12 @@ const AdminAppointments = () => {
         fetchCars(selectedAppointment.client.id);
       }
     } else {
-      setSelectedAppointment({
-        date: "",
-        status: "",
-        observations: "",
-        service_id: "",
-        user_id_worker: "",
-        user_id_client: "",
-        car_id: ""
-      });
-      setFormData({
-        date: "",
-        status: "",
-        observations: "",
-        service_id: "",
-        user_id_worker: "",
-        user_id_client: "",
-        car_id: ""
-      });
+      setSelectedAppointment(null);
+      resetFormData();
     }
 
-    // Cargar todos los perfiles de usuarios
     await fetchUsers();
+    setFilteredWorkers(allWorkers); 
 
     setShowModal(true);
     setShowNewAppointmentModal(isCreating);
@@ -153,6 +181,19 @@ const AdminAppointments = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedAppointment(null);
+    resetFormData();
+  };
+
+  const resetFormData = () => {
+    setFormData({
+      date: "",
+      status: "",
+      observations: "",
+      service_id: "",
+      user_id_worker: "",
+      user_id_client: "",
+      car_id: ""
+    });
   };
 
   const handlePageChange = (page) => {
@@ -167,31 +208,29 @@ const AdminAppointments = () => {
   const handleCreateAppointment = async () => {
     try {
       await createAppointment(formData, token);
-      setShowNewAppointmentModal(false);
+      handleCloseModal();
       getAppointments();
     } catch (error) {
       alert("Error al crear la cita");
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      const usersData = await getAllUserProfiles(token);
-      setUsers(usersData);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      alert('Error al obtener los perfiles de usuario.');
-    }
-  };
+  const handleServiceChange = (e) => {
+    const selectedService = e.target.value;
+    setFormData(prev => ({ ...prev, service_id: selectedService }));
 
-  const fetchCars = async (userId) => {
-    try {
-      const carsData = await getUserCarById(userId, token);
-      setCars(carsData.cars);
-    } catch (error) {
-      console.error('Error fetching cars:', error);
-      alert('Error al obtener los vehículos del usuario.');
-    }
+    const workerType = serviceWorkerMap[selectedService];
+    console.log('Selected service:', selectedService);
+    console.log('Worker type:', workerType);
+    console.log('All workers:', allWorkers);
+
+    const filtered = allWorkers.filter(worker => {
+      console.log('Worker:', worker);
+      return worker.workerType === workerType;
+    });
+
+    setFilteredWorkers(filtered);
+    console.log('Filtered workers:', filtered);
   };
 
   const handleUserChange = (e) => {
@@ -259,7 +298,6 @@ const AdminAppointments = () => {
 
     return matchesFilter && matchesSearchQuery;
   });
-
   // Paginación
   const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -329,99 +367,108 @@ const AdminAppointments = () => {
             <Modal.Title>{showNewAppointmentModal ? "Crear Nueva Cita" : "Detalles de la Cita"}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {selectedAppointment && (
-              <Form>
-                <Form.Group controlId="formClientId">
-                  <Form.Label>Cliente</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="user_id_client"
-                    value={formData.user_id_client}
-                    onChange={handleUserChange}
-                    required
-                  >
-                    <option value="">Seleccione un cliente</option>
-                    {users.map(user => (
-                      <option key={user.id} value={user.id}>{user.id}{user.firstName}</option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
-                <Form.Group controlId="formCarId">
-                  <Form.Label>Coche</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="car_id"
-                    value={formData.car_id}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Seleccione un coche</option>
-                    {cars.map(car => (
-                      <option key={car.id} value={car.id}>{car.licensePlate}</option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
-                <Form.Group controlId="formDatetime">
-                  <Form.Label>Fecha y Hora</Form.Label>
-                  <Form.Control
-                    type="datetime-local"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                    required
-                    min={new Date().toISOString().slice(0, 16)}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formStatus">
-                  <Form.Label>Estado</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="status"
-                    value={formData.status}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-                <Form.Group controlId="formObservations">
-                  <Form.Label>Observaciones</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="observations"
-                    value={formData.observations}
-                    onChange={handleInputChange}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formServiceId">
-                  <Form.Label>ID Servicio</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="service_id"
-                    value={formData.service_id}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-                <Form.Group controlId="formWorkerId">
-                  <Form.Label>ID Trabajador</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="user_id_worker"
-                    value={formData.user_id_worker}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </Form.Group>
-                {showNewAppointmentModal ? (
-                  <Button variant="primary" onClick={handleCreateAppointment}>
-                    Crear Cita
-                  </Button>
-                ) : (
-                  <Button variant="primary" onClick={() => handleEdit(selectedAppointment.id, formData)}>
-                    Guardar Cambios
-                  </Button>
-                )}
-              </Form>
-            )}
+            <Form>
+              <Form.Group controlId="formClientId">
+                <Form.Label>Cliente</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="user_id_client"
+                  value={formData.user_id_client}
+                  onChange={handleUserChange}
+                  required
+                >
+                  <option value="">Seleccione un cliente</option>
+                  {users.map(user => (
+                    <option key={user.id} value={user.id}>{user.firstName} {user.lastName}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="formCarId">
+                <Form.Label>Coche</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="car_id"
+                  value={formData.car_id}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Seleccione un coche</option>
+                  {cars.map(car => (
+                    <option key={car.id} value={car.id}>{car.licensePlate}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="formServiceId">
+                <Form.Label>Servicio</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="service_id"
+                  value={formData.service_id}
+                  onChange={handleServiceChange}
+                  required
+                >
+                  <option value="">Seleccione un servicio</option>
+                  <option value="1">Mecánica General</option>
+                  <option value="2">Mecánica Rápida</option>
+                  <option value="3">Chapa y pintura</option>
+                  <option value="4">Aire acondicionado</option>
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="formWorkerId">
+                <Form.Label>Trabajador</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="user_id_worker"
+                  value={formData.user_id_worker}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Seleccione un trabajador</option>
+                  {filteredWorkers.map(worker => (
+                    <option key={worker.id} value={worker.id}>{worker.firstName} {worker.lastName}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group controlId="formDatetime">
+                <Form.Label>Fecha y Hora</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  required
+                  min={new Date().toISOString().slice(0, 16)}
+                />
+              </Form.Group>
+              <Form.Group controlId="formStatus">
+                <Form.Label>Estado</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formObservations">
+                <Form.Label>Observaciones</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="observations"
+                  value={formData.observations}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+              {showNewAppointmentModal ? (
+                <Button variant="primary" onClick={handleCreateAppointment}>
+                  Crear Cita
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={() => handleEdit(selectedAppointment.id, formData)}>
+                  Guardar Cambios
+                </Button>
+              )}
+            </Form>
           </Modal.Body>
         </Modal>
       </div>
@@ -430,4 +477,3 @@ const AdminAppointments = () => {
 };
 
 export default AdminAppointments;
-

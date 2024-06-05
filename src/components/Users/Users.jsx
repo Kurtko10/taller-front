@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  getAllUserProfiles,
-  getUserById,
-  deleteUserById,
-  updateUserProfile,
-  createNewUserCall
-} from "../../service/apiCalls";
+import {  getAllUserProfiles,getUserById,deleteUserById,updateUserProfile,createNewUserCall} from "../../service/apiCalls";
 import { useSelector } from 'react-redux';
 import { getUserData } from "../../app/slices/userSlice";
 import { UserDetailsModal } from "../../components/UserModal/UserDetailsModal";
@@ -18,7 +12,6 @@ import "./Users.css";
 
 const Users = () => {
   const navigate = useNavigate();
-
   const [userProfiles, setUserProfiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -26,7 +19,6 @@ const Users = () => {
   const profilesPerPage = 5;
   const [showModal, setShowModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-
   const userReduxData = useSelector(getUserData);
   const token = userReduxData.token;
   const [allUserProfiles, setAllUserProfiles] = useState([]);
