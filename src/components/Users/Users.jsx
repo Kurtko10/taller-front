@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {  getAllUserProfiles,getUserById,deleteUserById,updateUserProfile,createNewUserCall} from "../../service/apiCalls";
+import { getAllUserProfiles, getUserById, deleteUserById, updateUserProfile, createNewUserCall } from "../../service/apiCalls";
 import { useSelector } from 'react-redux';
 import { getUserData } from "../../app/slices/userSlice";
 import { UserDetailsModal } from "../../components/UserModal/UserDetailsModal";
@@ -15,6 +15,7 @@ const Users = () => {
   const [userProfiles, setUserProfiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [initialUserData, setInitialUserData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const profilesPerPage = 5;
   const [showModal, setShowModal] = useState(false);
@@ -51,6 +52,7 @@ const Users = () => {
       try {
         const userData = await getUserById(userId, token);
         setSelectedUser(userData);
+        setInitialUserData(userData); // Guardar los datos iniciales del usuario
         setShowModal(true);
       } catch (error) {
         alert('Error al obtener el usuario');
@@ -105,16 +107,41 @@ const Users = () => {
     }
   };
 
+  const getUpdatedFields = (initialData, updatedData) => {
+    const updatedFields = {};
+    for (const key in updatedData) {
+      if (updatedData[key] !== initialData[key]) {
+        updatedFields[key] = updatedData[key];
+      }
+    }
+    return updatedFields;
+  };
+
   const updateUser = async (updatedUserData) => {
     try {
-      const payload = { ...updatedUserData, user_id: updatedUserData.id };
-      await updateUserProfile(updatedUserData.id, payload, token);
+      const updatedFields = getUpdatedFields(initialUserData, updatedUserData);
+      if (Object.keys(updatedFields).length === 0) {
+        alert("No hay cambios para guardar.");
+        return;
+      }
+
+      const cleanedFields = {};
+      for (const key in updatedFields) {
+        if (key === 'workerType' && (updatedFields[key] === '' || updatedUserData.roleId !== 2)) {
+          continue;
+        }
+        cleanedFields[key] = updatedFields[key];
+      }
+  
+      console.log("Datos enviados al backend para actualizar:", cleanedFields);
+      await updateUserProfile(updatedUserData.id, cleanedFields, token);
       const updatedUserProfiles = userProfiles.map(user =>
         user.id === updatedUserData.id ? { ...user, ...updatedUserData } : user
       );
       setUserProfiles(updatedUserProfiles);
       setShowModal(false);
     } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
       alert('Error al actualizar el usuario.');
     }
   };
@@ -137,24 +164,40 @@ const Users = () => {
     }
   };
 
+  const handleRowClick = async (row) => {
+    try {
+      const userData = await getUserById(row.id, token);
+      setSelectedUser(userData);
+      setInitialUserData(userData); // Guardar los datos iniciales del usuario
+      setShowModal(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles del usuario:", error);
+      alert('Hubo un error al obtener los detalles del usuario.');
+    }
+  };
+
+  const renderUserActions = (row) => (
+    <ButtonC onClick={() => handleUserClick(row.id, false)}>Ficha</ButtonC>
+  );
+
   const columns = [
     { field: 'id', headerName: 'ID' },
     { field: 'firstName', headerName: 'Nombre' },
     { field: 'lastName', headerName: 'Apellido' },
     { field: 'email', headerName: 'Correo' },
     { field: 'phone', headerName: 'Teléfono' },
-    { field: 'actions', headerName: 'Acciones' }
+    {
+      field: 'actions',
+      headerName: 'Acciones',
+      renderCell: (params) => renderUserActions(params.row),
+    }
   ];
-
-  const renderUserActions = (row) => (
-    <ButtonC onClick={() => handleUserClick(row.id, false)}>Ficha</ButtonC>
-  );
 
   return (
     <div className="usersView">
       <h1 id="usersTitle">Lista de Usuarios</h1>
       <SearchInput value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Buscar por nombre, apellido o rol" />
-      <DataTable rows={currentProfiles} columns={columns} renderActions={renderUserActions} />
+      <DataTable rows={currentProfiles} columns={columns} onRowClick={handleRowClick} renderActions={renderUserActions} />
       <UserDetailsModal
         show={showModal}
         userData={selectedUser}
@@ -163,8 +206,6 @@ const Users = () => {
         deleteUser={deleteUser}
         onUpdate={updateUser}
         onSave={handleSave}
-        token={token}
-        role={role}
       />
       <CustomPagination
         currentPage={currentPage}

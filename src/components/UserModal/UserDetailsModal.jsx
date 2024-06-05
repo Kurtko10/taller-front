@@ -120,10 +120,23 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
     return null;
   };
 
+  const getRoleName = (roleId) => {
+    switch(roleId) {
+      case '1':
+        return 'Admin';
+      case '2':
+        return 'Manager';
+      case '3':
+        return 'Client';
+      default:
+        return '';
+    }
+  };
+
   return (
     <Modal show={show} onHide={onClose}>
       <Modal.Header closeButton>
-        <Modal.Title>{isCreating ? "Crear Nuevo Usuario" : "Editar Usuario"}</Modal.Title>
+        <Modal.Title>{isCreating ? "Crear Nuevo Usuario" : "Editar Usuario"}-{formData.firstName}-{formData.lastName}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -190,7 +203,7 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
                 value={formData.password}
                 handlerProp={handleInputChange}
               />
-              <Form.Group controlId="formRoleSelect">
+               <Form.Group controlId="formRoleSelect">
                 <Form.Label>Rol</Form.Label>
                 <Form.Control as="select" value={formData.roleId} onChange={handleRoleChange}>
                   <option value="">Seleccione un Rol</option>
@@ -206,7 +219,7 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
             <CustomInput
               typeProp="text"
               nameProp="roleName"
-              placeholderProp="Rol"
+              placeholderProp={`Rol: ${formData.roleId}`}
               value={formData.roleName}
               handlerProp={handleInputChange}
               isDisabled={true}
