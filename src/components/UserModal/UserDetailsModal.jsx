@@ -64,7 +64,7 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
       ...formData,
       roleId: newRoleId,
       workerType: newRoleId === '2' ? formData.workerType : '',
-      province: newRoleId === '3' ? formData.province : ''
+      province: formData.province // Keep province for all roles
     };
     setFormData(newState);
   };
@@ -80,11 +80,10 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
     const userData = {
       ...formData,
       roleId: parseInt(formData.roleId),
-      workerType: formData.roleId === '2' ? formData.workerType : undefined,
-      province: formData.roleId === '3' ? formData.province : undefined
+      workerType: formData.roleId === '2' ? formData.workerType : undefined
     };
 
-    if (!userData.firstName || !userData.lastName || !userData.email || !userData.phone || !userData.password || !userData.roleId) {
+    if (!userData.firstName || !userData.lastName || !userData.email || !userData.phone || !userData.password || !userData.roleId || !userData.province) {
       console.error("Todos los campos necesarios deben estar presentes");
       return;
     }
@@ -104,33 +103,21 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
   };
 
   const roleSpecificFields = (roleId) => {
-    switch (roleId) {
-      case '2': // Manager
-        return (
-          <Form.Group controlId="formWorkerTypeSelect">
-            <Form.Label>Tipo de Trabajador</Form.Label>
-            <Form.Control as="select" value={formData.workerType} onChange={handleInputChange} name="workerType">
-              <option value="">Seleccione un Tipo de Trabajador</option>
-              <option value="mechanic">Mecánico</option>
-              <option value="quick_service">Servicio Rápido</option>
-              <option value="painter">Pintor</option>
-              <option value="bodyworker">Chapa</option>
-            </Form.Control>
-          </Form.Group>
-        );
-      case '3': // Client
-        return (
-          <CustomInput
-            typeProp="text"
-            nameProp="province"
-            placeholderProp="Provincia"
-            value={formData.province}
-            handlerProp={handleInputChange}
-          />
-        );
-      default:
-        return null;
+    if (roleId === '2') { // Manager
+      return (
+        <Form.Group controlId="formWorkerTypeSelect">
+          <Form.Label>Tipo de Trabajador</Form.Label>
+          <Form.Control as="select" value={formData.workerType} onChange={handleInputChange} name="workerType">
+            <option value="">Seleccione un Tipo de Trabajador</option>
+            <option value="mechanic">Mecánico</option>
+            <option value="quick_service">Servicio Rápido</option>
+            <option value="painter">Pintor</option>
+            <option value="bodyworker">Chapa</option>
+          </Form.Control>
+        </Form.Group>
+      );
     }
+    return null;
   };
 
   return (
@@ -186,6 +173,13 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
             value={formData.avatar}
             handlerProp={handleInputChange}
             isDisabled={true}
+          />
+          <CustomInput
+            typeProp="text"
+            nameProp="province"
+            placeholderProp="Provincia"
+            value={formData.province}
+            handlerProp={handleInputChange}
           />
           {isCreating && (
             <>
