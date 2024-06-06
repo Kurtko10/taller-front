@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import imgCita from "../../img/iconoCitas.png";
 import imgCar from "../../img/iconocar.png";
-import UserCars from "../../components/CarComponent/CarComponent"; 
+import UserCars from "../../components/CarComponent/CarComponent";
 
 export const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -27,7 +27,7 @@ export const Profile = () => {
   const navigate = useNavigate();
   const myPassport = useSelector(getUserData);
   const token = myPassport.token;
-  const userId = myPassport.id; 
+  const userId = myPassport.id;
   const [userData, setUserData] = useState();
   const [userName, setUserName] = useState("");
   const [updateData, setUpdateData] = useState({});
@@ -68,8 +68,7 @@ export const Profile = () => {
         const myProfileData = await bringProfile(token);
         setUserData(myProfileData.data);
         setProfileData(myProfileData.data);
-        console.log(myProfileData);
-        setRole(myProfileData.data.role?.name); 
+        setRole(myProfileData.data.role?.name);
       } catch (error) {
         alert('Error al obtener el perfil');
       }
@@ -96,7 +95,6 @@ export const Profile = () => {
   };
 
   const handleShowCars = () => {
-    console.log("Toggling showCars:", !showCars);
     setShowCars(!showCars);
   };
 
@@ -112,7 +110,7 @@ export const Profile = () => {
           <div className="avatar-container">
             <div className="titleProfile"><img src={userData?.avatar} alt="Avatar" className="avatar-img"/> {userData?.firstName}, aquí está tu perfil</div>
           </div>
-          
+
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3" controlId="formName">
@@ -218,12 +216,10 @@ export const Profile = () => {
             <img src={imgCar} alt="Vehículos" className="image-button-img"/>
             <div className="button-text">Vehículos</div>
           </div>
-          
         </div>
-        {showCars && <UserCars userId={userData.id} token={token} />}
+        {showCars && <UserCars userId={userData.id} token={token} show={showCars} onClose={() => setShowCars(false)} />}
       </div>
     </>
   );
 };
-
 

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { getAllUserProfiles, getUserById, deleteUserById, updateUserProfile, createNewUserCall } from "../../service/apiCalls";
+import { getAllUserProfiles, getUserById, deleteUserById, updateUserProfile, createNewUserCall, addUserCarToSpecificUser } from "../../service/apiCalls";
 import { useSelector } from 'react-redux';
 import { getUserData } from "../../app/slices/userSlice";
 import { UserDetailsModal } from "../../components/UserModal/UserDetailsModal";
+import UserCars from "../../components/CarComponent/CarComponent";
 import { useNavigate } from "react-router-dom";
 import DataTable from "../../components/Table/Table";
 import CustomPagination from "../Pagination/Pagination"; 
 import SearchInput from "../../components/SearchInput/SearchInput";
 import { ButtonC } from "../../components/ButtonC/ButtonC";
+import { Modal, Button, Form } from 'react-bootstrap';
 import "./Users.css";
 
 const Users = () => {
@@ -19,12 +21,21 @@ const Users = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const profilesPerPage = 5;
   const [showModal, setShowModal] = useState(false);
+  const [showCarsModal, setShowCarsModal] = useState(false);
+  const [showAddCarModal, setShowAddCarModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const userReduxData = useSelector(getUserData);
   const token = userReduxData.token;
   const [allUserProfiles, setAllUserProfiles] = useState([]);
   const userData = useSelector(state => state.user);
   const role = userData.decodificado.userRole;
+  const [newCar, setNewCar] = useState({
+    licensePlate: '',
+    carBrand: '',
+    model: '',
+    year: '',
+    userId: '',
+  });
 
   useEffect(() => {
     if (userData.decodificado.userRole !== "admin" && userData.decodificado.userRole !== "manager") {
@@ -61,9 +72,21 @@ const Users = () => {
     }
   };
 
+  const handleAddCarClick = () => {
+    setShowAddCarModal(true);
+  };
+
   const handleCloseModal = () => {
     setSelectedUser(null);
     setShowModal(false);
+  };
+
+  const handleCloseCarsModal = () => {
+    setShowCarsModal(false);
+  };
+
+  const handleCloseAddCarModal = () => {
+    setShowAddCarModal(false);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -146,6 +169,25 @@ const Users = () => {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCar((prevCar) => ({
+      ...prevCar,
+      [name]: value,
+    }));
+  };
+
+  const handleAddCar = async (e) => {
+    e.preventDefault();
+    try {
+      await addUserCarToSpecificUser(token, newCar.userId, newCar);
+      setShowAddCarModal(false);
+    } catch (error) {
+      console.error('Error adding car:', error);
+      alert('Error al añadir el vehículo');
+    }
+  };
+
   useEffect(() => {
     const filteredProfiles = allUserProfiles.filter(filterUserProfiles);
     setCurrentPage(1);
@@ -176,28 +218,19 @@ const Users = () => {
     }
   };
 
-  const renderUserActions = (row) => (
-    <ButtonC onClick={() => handleUserClick(row.id, false)}>Ficha</ButtonC>
-  );
-
   const columns = [
     { field: 'id', headerName: 'ID' },
     { field: 'firstName', headerName: 'Nombre' },
     { field: 'lastName', headerName: 'Apellido' },
     { field: 'email', headerName: 'Correo' },
     { field: 'phone', headerName: 'Teléfono' },
-    {
-      field: 'actions',
-      headerName: 'Acciones',
-      renderCell: (params) => renderUserActions(params.row),
-    }
   ];
 
   return (
     <div className="usersView">
       <h1 id="usersTitle">Lista de Usuarios</h1>
       <SearchInput value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Buscar por nombre, apellido o rol" />
-      <DataTable rows={currentProfiles} columns={columns} onRowClick={handleRowClick} renderActions={renderUserActions} />
+      <DataTable rows={currentProfiles} columns={columns} onRowClick={handleRowClick} />
       <UserDetailsModal
         show={showModal}
         userData={selectedUser}
@@ -212,11 +245,91 @@ const Users = () => {
         totalPages={Math.ceil(userProfiles.length / profilesPerPage)}
         onPageChange={handlePageChange}
       />
-      <ButtonC
-        title={"Nuevo Usuario"}
-        className={"regularButtonClass newUser"}
-        onClick={() => handleUserClick(null, true)}
-      />
+      <div className="button-container">
+        <ButtonC
+          title={"Nuevo Usuario"}
+          className={"regularButtonClass newUser"}
+          onClick={() => handleUserClick(null, true)}
+        />
+        <ButtonC
+          title={"Añadir Vehículo"}
+          className={"regularButtonClass addCar"}
+          onClick={handleAddCarClick}
+        />
+      </div>
+
+      <Modal show={showAddCarModal} onHide={handleCloseAddCarModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Añadir Vehículo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleAddCar}>
+            <Form.Group controlId="formUserId">
+              <Form.Label>Usuario</Form.Label>
+              <Form.Control
+                as="select"
+                name="userId"
+                value={newCar.userId}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Seleccione un usuario</option>
+                {allUserProfiles.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.firstName} {user.lastName}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="formLicensePlate">
+              <Form.Label>Matrícula</Form.Label>
+              <Form.Control
+                type="text"
+                name="licensePlate"
+                value={newCar.licensePlate}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formCarBrand">
+              <Form.Label>Marca</Form.Label>
+              <Form.Control
+                type="text"
+                name="carBrand"
+                value={newCar.carBrand}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formModel">
+              <Form.Label>Modelo</Form.Label>
+              <Form.Control
+                type="text"
+                name="model"
+                value={newCar.model}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formYear">
+              <Form.Label>Año</Form.Label>
+              <Form.Control
+                type="number"
+                name="year"
+                value={newCar.year}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Guardar
+            </Button>
+            <Button variant="secondary" onClick={handleCloseAddCarModal}>
+              Cancelar
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

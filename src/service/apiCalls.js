@@ -279,6 +279,18 @@ export const addUserCar = async (token, carData) => {
   console.log(res);
   return res.data;
 };
+// Añadir vehículo a un usuario específico
+export const addUserCarToSpecificUser = async (token, userId, carData) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = await axios.post(`${API_URL}/api/cars/${userId}`, carData, config);
+  console.log(res);
+  return res.data;
+};
+
 
 // Eliminar vehículo
 export const deleteUserCar = async (token, carId) => {

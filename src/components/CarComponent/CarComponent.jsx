@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from '../Table/Table';
-import { getUserCars, addUserCar, deleteUserCar } from '../../service/apiCalls';
+import { getUserCars, addUserCar, deleteUserCar, addUserCarToSpecificUser } from '../../service/apiCalls';
 import { useSelector } from 'react-redux';
 import { Modal, Button, Form } from 'react-bootstrap';
 
-const UserCars = ({ userId, token }) => {
+const UserCars = ({ userId, token, show, onClose, addToOtherUser }) => {
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
   const [showAddCarModal, setShowAddCarModal] = useState(false);
@@ -18,19 +18,18 @@ const UserCars = ({ userId, token }) => {
   });
 
   const role = useSelector((state) => state.user.role);
+  const currentUser = useSelector((state) => state.user);
+  const currentUserId = currentUser.decodificado.userId;
 
   useEffect(() => {
-    console.log('UserCars mounted with userId:', userId);
-    if (userId && token) {
+    if (userId || currentUserId) {
       fetchUserCars();
     }
-  }, [userId, token]);
+  }, [userId, currentUserId]);
 
   const fetchUserCars = async () => {
-    console.log('Fetching cars for user:', userId);
     try {
-      const userCars = await getUserCars(token, userId);
-      console.log('Fetched cars:', userCars);
+      const userCars = await getUserCars(token, userId || currentUserId);
       setCars(userCars.cars || []);
     } catch (error) {
       console.error('Error fetching cars:', error);
@@ -43,16 +42,22 @@ const UserCars = ({ userId, token }) => {
     setNewCar((prevCar) => ({
       ...prevCar,
       [name]: value,
+      userId: addToOtherUser ? newCar.userId : userId || currentUserId,
     }));
   };
 
   const handleAddCar = async (e) => {
     e.preventDefault();
     try {
-      const response = await addUserCar(token, newCar);
-      console.log('Car added successfully:', response);
+      if (addToOtherUser) {
+        const response = await addUserCarToSpecificUser(token, newCar.userId, newCar);
+        console.log('Add Car to Specific User Response:', response);
+      } else {
+        const response = await addUserCar(token, newCar);
+        console.log('Add Car Response:', response);
+      }
       setShowAddCarModal(false);
-      fetchUserCars(); // Refrescar la lista de coches
+      fetchUserCars();
     } catch (error) {
       console.error('Error adding car:', error);
       alert('Error al añadir el vehículo');
@@ -70,9 +75,9 @@ const UserCars = ({ userId, token }) => {
 
     try {
       await deleteUserCar(token, selectedCar.id);
-      console.log('Car deleted successfully');
+      setSelectedCar(null);
       setShowCarDetailsModal(false);
-      fetchUserCars(); // Refrescar la lista de coches
+      fetchUserCars();
     } catch (error) {
       console.error('Error deleting car:', error);
       alert('Error al eliminar el vehículo');
@@ -88,26 +93,49 @@ const UserCars = ({ userId, token }) => {
   ];
 
   return (
-    <div className="user-cars-container">
-      <h1>Mis Vehículos</h1>
-      {cars.length > 0 ? (
-        <>
+    <Modal show={show} onHide={onClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Vehículos del Usuario</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {cars.length > 0 ? (
           <DataTable rows={cars} columns={columns} onRowClick={handleRowClick} renderActions={() => null} />
-          <Button onClick={() => setShowAddCarModal(true)}>Añadir Vehículo</Button>
-        </>
-      ) : (
-        <>
+        ) : (
           <p>No tienes vehículos registrados.</p>
-          <Button onClick={() => setShowAddCarModal(true)}>Añadir Vehículo</Button>
-        </>
-      )}
-      
+        )}
+        <Button onClick={() => setShowAddCarModal(true)}>Añadir Vehículo</Button>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
+          Cerrar
+        </Button>
+      </Modal.Footer>
+
       <Modal show={showAddCarModal} onHide={() => setShowAddCarModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Añadir Vehículo</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleAddCar}>
+            {addToOtherUser && (
+              <Form.Group controlId="formUserId">
+                <Form.Label>Usuario</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="userId"
+                  value={newCar.userId}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Seleccione un usuario</option>
+                  {cars.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.firstName} {user.lastName}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            )}
             <Form.Group controlId="formLicensePlate">
               <Form.Label>Matrícula</Form.Label>
               <Form.Control
@@ -148,17 +176,6 @@ const UserCars = ({ userId, token }) => {
                 required
               />
             </Form.Group>
-            {(role === 'manager' || role === 'admin') && (
-              <Form.Group controlId="formUserId">
-                <Form.Label>User ID</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="userId"
-                  value={newCar.userId}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-            )}
             <Button variant="primary" type="submit">
               Guardar
             </Button>
@@ -191,9 +208,8 @@ const UserCars = ({ userId, token }) => {
           </Modal.Footer>
         </Modal>
       )}
-    </div>
+    </Modal>
   );
 };
 
 export default UserCars;
-
