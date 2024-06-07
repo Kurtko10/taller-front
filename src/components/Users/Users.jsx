@@ -3,13 +3,13 @@ import { getAllUserProfiles, getUserById, deleteUserById, updateUserProfile, cre
 import { useSelector } from 'react-redux';
 import { getUserData } from "../../app/slices/userSlice";
 import { UserDetailsModal } from "../../components/UserModal/UserDetailsModal";
-import UserCars from "../../components/CarComponent/CarComponent";
 import { useNavigate } from "react-router-dom";
 import DataTable from "../../components/Table/Table";
 import CustomPagination from "../Pagination/Pagination"; 
 import SearchInput from "../../components/SearchInput/SearchInput";
-import { ButtonC } from "../../components/ButtonC/ButtonC";
 import { Modal, Button, Form } from 'react-bootstrap';
+import addUserIcon from "../../img/añadirUser.png";
+import addCarIcon from "../../img/addVehiculo.jpeg";
 import "./Users.css";
 
 const Users = () => {
@@ -246,16 +246,14 @@ const Users = () => {
         onPageChange={handlePageChange}
       />
       <div className="button-container">
-        <ButtonC
-          title={"Nuevo Usuario"}
-          className={"regularButtonClass newUser"}
-          onClick={() => handleUserClick(null, true)}
-        />
-        <ButtonC
-          title={"Añadir Vehículo"}
-          className={"regularButtonClass addCar"}
-          onClick={handleAddCarClick}
-        />
+        <div className="image-button" onClick={() => handleUserClick(null, true)}>
+          <img src={addUserIcon} alt="Nuevo Usuario" className="image-button-img" />
+          <div className="button-text">Nuevo Usuario</div>
+        </div>
+        <div className="image-button" onClick={handleAddCarClick}>
+          <img src={addCarIcon} alt="Añadir Vehículo" className="image-button-img" />
+          <div className="button-text">Añadir Vehículo</div>
+        </div>
       </div>
 
       <Modal show={showAddCarModal} onHide={handleCloseAddCarModal}>

@@ -9,6 +9,7 @@ import UserCars from "../../components/CarComponent/CarComponent";
 import { AdminRoute } from "../../components/AdminRoute/AdminRoute";
 import "./Body.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Users from "../../components/Users/Users";
 
 export const Body = () => {
   return (
@@ -19,6 +20,7 @@ export const Body = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/users" element={<Users />} />
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/user-cars" component={UserCars} />
         

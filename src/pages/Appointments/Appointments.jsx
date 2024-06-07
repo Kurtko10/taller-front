@@ -77,7 +77,7 @@ const Appointments = () => {
       fetchClientData();
       fetchAllWorkers();
       if (role === 'manager') {
-        fetchAllClients();  // Llama a la función para obtener clientes solo si el rol es manager
+        fetchAllClients();  
       }
     }
   }, [token, role]);
@@ -232,8 +232,15 @@ const Appointments = () => {
       const fullAppointment = await getAppointmentById(appointment.id, token);
       setSelectedAppointment(fullAppointment);
       console.log("Un clic en la fila:", fullAppointment);
+      
+      // Ajuste de la fecha y hora para la zona horaria local
+      const appointmentDate = new Date(fullAppointment.date);
+      const offset = appointmentDate.getTimezoneOffset();
+      appointmentDate.setMinutes(appointmentDate.getMinutes() - offset);
+      const localDatetime = appointmentDate.toISOString().slice(0, 16);
+  
       setEditData({
-        datetime: fullAppointment.date,
+        datetime: localDatetime,
         status: fullAppointment.status,
         observations: fullAppointment.observations || ""
       });
@@ -243,7 +250,7 @@ const Appointments = () => {
       alert('Hubo un error al obtener los detalles de la cita.');
     }
   };
-
+  
   const handleCreateAppointment = async () => {
     try {
       const { datetime, service_id, client_id, car_id, worker_id, observations } = formData;

@@ -178,6 +178,7 @@ export const getAppointmentById = async (id, token) => {
   }
 };
 
+
 // Editar cita 
 export const updateAppointmentById = async (id, token, appointmentData) => {
   try {

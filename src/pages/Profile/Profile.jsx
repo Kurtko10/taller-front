@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import imgCita from "../../img/iconoCitas.png";
 import imgCar from "../../img/iconocar.png";
+import imgUsers from "../../img/usuarios.png"; 
 import UserCars from "../../components/CarComponent/CarComponent";
 
 export const Profile = () => {
@@ -200,6 +201,12 @@ export const Profile = () => {
               <div className="button-text">Citas</div>
             </div>
           )}
+          {role === 'manager' && (
+            <div className="image-button" onClick={() => navigate("/users")}>
+              <img src={imgUsers} alt="Usuarios" className="image-button-img"/>
+              <div className="button-text">Usuarios</div>
+            </div>
+          )}
           <BootstrapModal
             profileData={userData}
             token={token}
@@ -222,4 +229,3 @@ export const Profile = () => {
     </>
   );
 };
-
