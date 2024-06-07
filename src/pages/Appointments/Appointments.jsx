@@ -4,13 +4,12 @@ import { Form, Container, Row, Col, Carousel } from 'react-bootstrap';
 import {
   getAppointmentsByClientId,
   getAppointmentsByWorkerId,
-  updateAppointmentById,
   createAppointment,
-  deleteAppointmentById,
   bringProfile,
   getUserCars,
   getUsersByManagerRole,
-  getAppointmentById
+  getAppointmentById,
+  getAllUserProfiles 
 } from "../../service/apiCalls"; 
 import AppointmentCard from "../../components/AppointmentCard/AppointmentCard";
 import { useSelector } from 'react-redux';
@@ -22,7 +21,7 @@ import DataTable from '../../components/Table/Table';
 import Pagination from '../../components/Pagination/Pagination';
 import CreateAppointmentModal from "../../components/CreateAppointmentModal/CreateAppointmentModal";
 import EditAppointmentModal from "../../components/EditAppointmentModa/EditAppointmentModal";
-import serviceWorkerMap from "../../utils/serviceWorkerMap";
+import { serviceWorkerMap, handleDelete, handleEdit, handleFilterChange, handleSearchChange, handleCriteriaChange, handlePageChange, handleInputChange } from "../../utils/utilsAppointments";
 import './Appointments.css';
 
 const Appointments = () => {
@@ -42,6 +41,7 @@ const Appointments = () => {
   const [cars, setCars] = useState([]);
   const [workers, setWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
+  const [clients, setClients] = useState([]); // Define el estado para los clientes
   const userReduxData = useSelector(getUserData);
   const token = userReduxData.token;
   const [clientId, setClientId] = useState(null);
@@ -76,8 +76,11 @@ const Appointments = () => {
     if (token) {
       fetchClientData();
       fetchAllWorkers();
+      if (role === 'manager') {
+        fetchAllClients();  // Llama a la función para obtener clientes solo si el rol es manager
+      }
     }
-  }, [token]);
+  }, [token, role]);
 
   useEffect(() => {
     if (role) {
@@ -120,6 +123,15 @@ const Appointments = () => {
     }
   };
 
+  const fetchAllClients = async () => {
+    try {
+      const response = await getAllUserProfiles(token);
+      setClients(response);
+    } catch (error) {
+      alert('Error al obtener los clientes');
+    }
+  };
+
   const getAppointments = async () => {
     if (role === 'manager') {
       try {
@@ -146,41 +158,6 @@ const Appointments = () => {
     } catch (error) {
       alert('Error al obtener los datos de los vehículos');
     }
-  };
-
-  const handleDelete = async (appointmentId) => {
-    try {
-      const confirmDelete = window.confirm("¿Seguro que deseas cancelar tu cita?");
-      if (!confirmDelete) return;
-
-      await deleteAppointmentById(appointmentId, token);
-      getAppointments();
-      setShowEditModal(false); // Cerrar el modal después de eliminar
-    } catch (error) {
-      alert('Hubo un error al intentar eliminar la cita.');
-    }
-  };
-
-  const handleEdit = async (appointmentId, editData) => {
-    try {
-      await updateAppointmentById(appointmentId, token, { date: editData.datetime, status: editData.status, observations: editData.observations });
-      getAppointments();
-      setShowEditModal(false); // Cerrar el modal después de actualizar
-    } catch (error) {
-      alert('Hubo un error al intentar actualizar la cita.');
-    }
-  };
-
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleCriteriaChange = (e) => {
-    setSearchCriteria(e.target.value);
   };
 
   const formatDateTime = (dateTime) => {
@@ -250,9 +227,21 @@ const Appointments = () => {
     setFormData((prevState) => ({ ...prevState, worker_id: selectedWorker }));
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  const handleRowClick = async (appointment) => {
+    try {
+      const fullAppointment = await getAppointmentById(appointment.id, token);
+      setSelectedAppointment(fullAppointment);
+      console.log("Un clic en la fila:", fullAppointment);
+      setEditData({
+        datetime: fullAppointment.date,
+        status: fullAppointment.status,
+        observations: fullAppointment.observations || ""
+      });
+      setShowEditModal(true);
+    } catch (error) {
+      console.error("Error al obtener los detalles de la cita:", error);
+      alert('Hubo un error al obtener los detalles de la cita.');
+    }
   };
 
   const handleCreateAppointment = async () => {
@@ -278,29 +267,8 @@ const Appointments = () => {
     }
   };
 
-  const handleRowClick = async (appointment) => {
-    try {
-      const fullAppointment = await getAppointmentById(appointment.id, token);
-      setSelectedAppointment(fullAppointment);
-      console.log("Un clic en la fila:", fullAppointment);
-      setEditData({
-        datetime: formatDateTime(fullAppointment.date),
-        status: fullAppointment.status,
-        observations: fullAppointment.observations || ""
-      });
-      setShowEditModal(true);
-    } catch (error) {
-      console.error("Error al obtener los detalles de la cita:", error);
-      alert('Hubo un error al obtener los detalles de la cita.');
-    }
-  };
-
   const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
 
   const columns = [
     { field: 'id', headerName: 'ID Cita' },
@@ -340,7 +308,7 @@ const Appointments = () => {
       <h1>Citas {role === 'manager' ? 'del artista' : 'del usuario'}</h1>
       <Form.Group controlId="formFilter">
         <Form.Label>Filtrar citas:</Form.Label>
-        <Form.Control as="select" value={filter} onChange={handleFilterChange}>
+        <Form.Control as="select" value={filter} onChange={(e) => handleFilterChange(e, setFilter)}>
           <option value="future">Futuras</option>
           <option value="past">Pasadas</option>
           <option value="all">Todas</option>
@@ -350,7 +318,7 @@ const Appointments = () => {
         <>
           <Form.Group controlId="formSearchCriteria">
             <Form.Label>Criterio de Búsqueda:</Form.Label>
-            <Form.Control as="select" value={searchCriteria} onChange={handleCriteriaChange}>
+            <Form.Control as="select" value={searchCriteria} onChange={(e) => handleCriteriaChange(e, setSearchCriteria)}>
               <option value="id">ID Cita</option>
               <option value="clientId">ID Cliente</option>
               <option value="clientName">Cliente</option>
@@ -360,7 +328,7 @@ const Appointments = () => {
           <SearchInput
             placeholder={`Buscar por ${searchCriteria}`}
             value={searchQuery}
-            onChange={handleSearchChange}
+            onChange={(e) => handleSearchChange(e, setSearchQuery)}
           />
         </>
       )}
@@ -395,8 +363,8 @@ const Appointments = () => {
                   <Carousel.Item key={appointment.id}>
                     <AppointmentCard 
                       appointment={appointment} 
-                      onDelete={handleDelete} 
-                      onEdit={handleEdit} 
+                      onDelete={(id) => handleDelete(id, token, getAppointments)} 
+                      onEdit={(id, data) => handleEdit(id, data, token, getAppointments, () => setShowEditModal(false))} 
                     />
                   </Carousel.Item>
                 ))}
@@ -410,8 +378,8 @@ const Appointments = () => {
                     <Col key={appointment.id} md={6} lg={4}>
                       <AppointmentCard 
                         appointment={appointment} 
-                        onDelete={handleDelete} 
-                        onEdit={handleEdit} 
+                        onDelete={(id) => handleDelete(id, token, getAppointments)} 
+                        onEdit={(id, data) => handleEdit(id, data, token, getAppointments, () => setShowEditModal(false))} 
                       />
                     </Col>
                   ))
@@ -441,14 +409,20 @@ const Appointments = () => {
         show={showNewAppointmentModal}
         onHide={() => setShowNewAppointmentModal(false)}
         formData={formData}
-        handleInputChange={handleInputChange}
+        handleInputChange={(e) => handleInputChange(e, setFormData)}
         handleServiceChange={handleServiceChange}
         handleCarChange={handleCarChange}
         handleWorkerChange={handleWorkerChange}
         handleCreateAppointment={handleCreateAppointment}
+        clients={clients}
         cars={cars}
         filteredWorkers={filteredWorkers}
-        clientId={clientId}
+        handleClientChange={(e) => {
+          const clientId = e.target.value;
+          setFormData(prev => ({ ...prev, client_id: clientId }));
+          fetchUserCars(clientId, token);
+        }}
+        role={role}
       />
 
       <EditAppointmentModal
@@ -456,8 +430,8 @@ const Appointments = () => {
         onHide={() => setShowEditModal(false)}
         selectedAppointment={selectedAppointment}
         editData={editData}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        handleEdit={(id, data) => handleEdit(id, data, token, getAppointments, () => setShowEditModal(false))}
+        handleDelete={(id) => handleDelete(id, token, getAppointments)}
         setEditData={setEditData}
         formatDateTime={formatDateTime}
       />
@@ -466,7 +440,7 @@ const Appointments = () => {
         <Pagination
           totalPages={totalPages}
           currentPage={currentPage}
-          onPageChange={handlePageChange}
+          onPageChange={(page) => handlePageChange(page, setCurrentPage)}
         />
       )}
     </div>
@@ -474,4 +448,3 @@ const Appointments = () => {
 };
 
 export default Appointments;
-

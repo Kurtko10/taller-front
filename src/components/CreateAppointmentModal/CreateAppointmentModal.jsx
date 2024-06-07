@@ -22,7 +22,7 @@ const CreateAppointmentModal = ({
     </Modal.Header>
     <Modal.Body>
       <Form>
-        {role === 'admin' && (
+        {role === 'manager' && (
           <Form.Group controlId="formClientId">
             <Form.Label>Cliente</Form.Label>
             <Form.Select name="client_id" value={formData.client_id} onChange={handleClientChange} required>
