@@ -156,7 +156,6 @@ const Users = () => {
         cleanedFields[key] = updatedFields[key];
       }
   
-      console.log("Datos enviados al backend para actualizar:", cleanedFields);
       await updateUserProfile(updatedUserData.id, cleanedFields, token);
       const updatedUserProfiles = userProfiles.map(user =>
         user.id === updatedUserData.id ? { ...user, ...updatedUserData } : user
@@ -164,7 +163,7 @@ const Users = () => {
       setUserProfiles(updatedUserProfiles);
       setShowModal(false);
     } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
+
       alert('Error al actualizar el usuario.');
     }
   };
@@ -183,7 +182,7 @@ const Users = () => {
       await addUserCarToSpecificUser(token, newCar.userId, newCar);
       setShowAddCarModal(false);
     } catch (error) {
-      console.error('Error adding car:', error);
+
       alert('Error al añadir el vehículo');
     }
   };
@@ -213,7 +212,7 @@ const Users = () => {
       setInitialUserData(userData);
       setShowModal(true);
     } catch (error) {
-      console.error("Error al obtener los detalles del usuario:", error);
+
       alert('Hubo un error al obtener los detalles del usuario.');
     }
   };

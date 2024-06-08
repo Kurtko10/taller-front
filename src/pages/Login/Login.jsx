@@ -58,24 +58,19 @@ const Login = () => {
       if (answer.data.token) {
         const uDecodificado = decodeToken(answer.data.token);
         dispatch(login({ token: answer.data.token, decodificado: uDecodificado })); 
-        console.log(uDecodificado);
         setMsg(`${uDecodificado.userName}, bienvenid@ de nuevo.`);
 
         if (uDecodificado.userRole === "admin") {
-          navigate("/");
-          console.log("soy admin");
-          
+          navigate("/"); 
         } else if(uDecodificado.userRole === "manager"){
           setTimeout(() => {
             navigate("/profile");
-            console.log("soy manager");
           }, 4000);
         }
         
         else {
           setTimeout(() => {
             navigate("/profile");
-            console.log("soy user");
           }, 4000);
         }
       }

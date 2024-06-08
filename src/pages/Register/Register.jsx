@@ -118,7 +118,6 @@ export const Register = () => {
   
     if (allValid) {
       try {
-        console.log('Datos enviados:', credentials); // Verificar los datos enviados
         const answer = await registerNewUserCall(credentials);
         if (answer.success) {
           setMsg("¡Gracias por registrarte!");
@@ -130,7 +129,7 @@ export const Register = () => {
           setMsg(answer.message || "Error al registrar el usuario");
         }
       } catch (error) {
-        console.error("Error en el registro:", error);
+
         setMsg("Error al registrar el usuario");
       }
     } else {

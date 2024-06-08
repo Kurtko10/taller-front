@@ -20,8 +20,6 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-
-
   // Acceder al estado de Redux para verificar si el usuario está autenticado
   const isLoggedIn = useSelector(state => state.user.token !== "");
   

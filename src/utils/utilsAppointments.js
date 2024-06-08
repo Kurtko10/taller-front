@@ -22,7 +22,7 @@ import {
     try {
       return await getAllUserProfiles(token);
     } catch (error) {
-      console.error('Error fetching users:', error);
+
       throw new Error('Error al obtener los perfiles de usuario.');
     }
   };
@@ -31,7 +31,6 @@ import {
     try {
       return await getUsersByManagerRole();
     } catch (error) {
-      console.error('Error fetching workers:', error);
       throw new Error('Error al obtener los trabajadores.');
     }
   };
@@ -41,7 +40,7 @@ import {
       const carsData = await getUserCarById(userId, token);
       return carsData.cars;
     } catch (error) {
-      console.error('Error fetching cars:', error);
+
       throw new Error('Error al obtener los vehículos del usuario.');
     }
   };
@@ -73,13 +72,11 @@ import {
         car_id: editData.car_id
       };
   
-      console.log('Payload:', payload);
-  
       await updateAppointmentById(appointmentId, token, payload);
       await getAppointments();
       if (handleCloseModal) handleCloseModal();
     } catch (error) {
-      console.error('Error updating appointment:', error);
+
       throw new Error(`Hubo un error al intentar actualizar la cita. Detalles del error: ${error.message}`);
     }
   };

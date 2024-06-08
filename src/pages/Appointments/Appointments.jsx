@@ -145,7 +145,6 @@ const Appointments = () => {
       try {
         const appointmentsData = await getAppointmentsByClientId(token);
         setAppointments(appointmentsData || []);
-        console.log(appointmentsData);
       } catch (error) {
         alert('Hubo un error al obtener las citas');
       }
@@ -232,7 +231,6 @@ const Appointments = () => {
     try {
       const fullAppointment = await getAppointmentById(appointment.id, token);
       setSelectedAppointment(fullAppointment);
-      console.log("Un clic en la fila:", fullAppointment);
       
       // Ajuste de la fecha y hora para la zona horaria local
       const appointmentDate = new Date(fullAppointment.date);
@@ -247,7 +245,7 @@ const Appointments = () => {
       });
       setShowEditModal(true);
     } catch (error) {
-      console.error("Error al obtener los detalles de la cita:", error);
+
       alert('Hubo un error al obtener los detalles de la cita.');
     }
   };
@@ -264,14 +262,12 @@ const Appointments = () => {
         observations
       };
 
-      console.log("Datos del formulario enviados:", formattedData);
-
       await createAppointment(formattedData, token);
       setShowNewAppointmentModal(false);
       getAppointments();
     } catch (error) {
       alert('Hubo un error al intentar crear la cita.');
-      console.error("Error al crear la cita:", error.response ? error.response.data : error.message);
+
     }
   };
 

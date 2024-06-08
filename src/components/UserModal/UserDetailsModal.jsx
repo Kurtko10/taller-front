@@ -64,7 +64,7 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
       ...formData,
       roleId: newRoleId,
       workerType: newRoleId === '2' ? formData.workerType : '',
-      province: formData.province // Keep province for all roles
+      province: formData.province 
     };
     setFormData(newState);
   };
@@ -84,12 +84,12 @@ export const UserDetailsModal = ({ show, userData, onClose, deleteUser, onSave, 
     };
 
     if (!userData.firstName || !userData.lastName || !userData.email || !userData.phone || !userData.password || !userData.roleId || !userData.province) {
-      console.error("Todos los campos necesarios deben estar presentes");
+
       return;
     }
 
     if (userData.roleId === 2 && !userData.workerType) {
-      console.error("El campo de tipo de trabajador es necesario para los roles de manager");
+
       return;
     }
 

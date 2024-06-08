@@ -32,7 +32,7 @@ const UserCars = ({ userId, token, show, onClose, addToOtherUser }) => {
       const userCars = await getUserCars(token, userId || currentUserId);
       setCars(userCars.cars || []);
     } catch (error) {
-      console.error('Error fetching cars:', error);
+
       alert('Error al obtener los datos de los vehículos');
     }
   };
@@ -51,15 +51,13 @@ const UserCars = ({ userId, token, show, onClose, addToOtherUser }) => {
     try {
       if (addToOtherUser) {
         const response = await addUserCarToSpecificUser(token, newCar.userId, newCar);
-        console.log('Add Car to Specific User Response:', response);
       } else {
         const response = await addUserCar(token, newCar);
-        console.log('Add Car Response:', response);
       }
       setShowAddCarModal(false);
       fetchUserCars();
     } catch (error) {
-      console.error('Error adding car:', error);
+
       alert('Error al añadir el vehículo');
     }
   };
@@ -79,7 +77,7 @@ const UserCars = ({ userId, token, show, onClose, addToOtherUser }) => {
       setShowCarDetailsModal(false);
       fetchUserCars();
     } catch (error) {
-      console.error('Error deleting car:', error);
+
       alert('Error al eliminar el vehículo');
     }
   };

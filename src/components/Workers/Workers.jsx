@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { getUsersByManagerRole } from "../../service/apiCalls"; // Supongamos que esta llamada existe
+import { getUsersByManagerRole } from "../../service/apiCalls";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Card, Col, Row, Form } from "react-bootstrap";
-import { WorkerDetailsModal } from "../../components/WorkerDetailsModal/WorkerDetailsModal"; // Supongamos que este componente existe
+import { WorkerDetailsModal } from "../../components/WorkerDetailsModal/WorkerDetailsModal"; 
 import { UserCard } from "../../components/UsersCard/UsersCard";
 import "./Workers.css";
 
@@ -23,7 +23,6 @@ export const Workers = () => {
       .then((response) => {
         const fetchedWorkers = response;
         setWorkers(fetchedWorkers);
-        console.log(fetchedWorkers);
         setFilteredWorkers(fetchedWorkers); // Inicialmente, mostrar todos los trabajadores
       })
       .catch((error) => {

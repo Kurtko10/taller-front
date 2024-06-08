@@ -1,4 +1,3 @@
-// utils/serviceWorkerMap.js
 const serviceWorkerMap = {
     "1": "mechanic",
     "2": "quick_service",

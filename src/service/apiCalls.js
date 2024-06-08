@@ -17,20 +17,18 @@ export const registerNewUserCall = async (credentials) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error('Error de respuesta:', error.response.data);
       return {
         success: false,
         message: error.response.data.message || 'Error en el registro del usuario',
         status: error.response.status,
       };
     } else if (error.request) {
-      console.error('Error de solicitud:', error.request);
       return {
         success: false,
         message: 'No se recibió respuesta del servidor',
       };
     } else {
-      console.error('Error:', error.message);
+
       return {
         success: false,
         message: 'Error en la configuración de la solicitud',
@@ -67,10 +65,10 @@ export const createNewUserCall = async (userData, token) => {
 export const getUsersByManagerRole = async () => {
   try {
     const res = await axios.get(`${API_URL}/api/users/role/managers`);
-    return Array.isArray(res.data) ? res.data : []; // Asegúrate de devolver una matriz
+    return Array.isArray(res.data) ? res.data : []; 
   } catch (error) {
-    console.error('Error al obtener los trabajadores con rol de manager', error);
-    throw error; // Lanza el error para que pueda ser manejado en el componente
+
+    throw error; 
   }
 };
 
@@ -173,7 +171,7 @@ export const getAppointmentById = async (id, token) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error al obtener la cita:', error);
+
     throw error;
   }
 };
@@ -182,17 +180,15 @@ export const getAppointmentById = async (id, token) => {
 // Editar cita 
 export const updateAppointmentById = async (id, token, appointmentData) => {
   try {
-    console.log('Sending data to update appointment:', appointmentData);
     const response = await axios.put(`${API_URL}/api/appointments/${id}`, appointmentData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    console.log('Response:', response);
     return response.data;
   } catch (error) {
-    console.error('Error in updateAppointmentById:', error.response ? error.response.data : error.message);
+
     throw error;
   }
 };
@@ -205,7 +201,7 @@ export const createAppointment = async (appointmentData, token) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response.data);
+
     return response.data;
   } catch (error) {
     throw error;
@@ -231,10 +227,10 @@ export const getAllAppointments = async (token) => {
     const response = await axios.get(`${API_URL}/api/appointments`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log(response.data);
+
     return response.data;
   } catch (error) {
-    console.error('Error fetching all appointments:', error);
+
     throw error;
   }
 };
@@ -242,17 +238,17 @@ export const getAllAppointments = async (token) => {
 //--------------------VEHICULOS-------
 // Ver vehículos
 export const getUserCars = async (token, userId) => {
-  console.log('getUserCars called with userId:', userId);
+
   try {
     const response = await axios.get(`${API_URL}/api/cars/userCars`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log('API response:', response.data);
+
     return response.data;
   } catch (error) {
-    console.error('Error fetching user cars:', error);
+
     throw error;
   }
 };
@@ -279,7 +275,7 @@ export const addUserCar = async (token, carData) => {
     },
   };
   const res = await axios.post(`${API_URL}/api/cars/userCars`, carData, config);
-  console.log(res);
+
   return res.data;
 };
 
@@ -291,7 +287,6 @@ export const addUserCarToSpecificUser = async (token, userId, carData) => {
     },
   };
   const res = await axios.post(`${API_URL}/api/cars/${userId}`, carData, config);
-  console.log(res);
   return res.data;
 };
 
