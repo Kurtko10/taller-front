@@ -2,7 +2,7 @@
 
 <H4 align="center">🚘TALLER DE VEHÍCULOS🚘</H4> 
 
-<H6>Proyecto Final del Bootcamp Full Stack Developer de Geekshubs Academy</H6>
+<H6 align="center">Proyecto Final del Bootcamp Full Stack Developer de Geekshubs Academy</H6>
 
 ## Descripción 🚀 
 
