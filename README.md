@@ -32,7 +32,8 @@ Recrea la parte frontend para la gestión de un taller de vehiculos, con gestió
 ##  Instrucciones de uso ⚙️
 
 1. **Clonar el repositorio**:
-   ```git clone [Repo](https://github.com/Kurtko10/taller-front) ```
+   ```git clone  ```
+   [Repo](https://github.com/Kurtko10/taller-front)
 2. **Instalar dependencias**: 
     ``` npm instal ```
 3. **Inicial la aplicación**
@@ -40,7 +41,7 @@ Recrea la parte frontend para la gestión de un taller de vehiculos, con gestió
 
 ### Backend 📮
 
-  -  [text](https://github.com/Kurtko10/taller-back)
+  -  [Repo backend](https://github.com/Kurtko10/taller-back)
 
 
 ### Acceso a la aplicación 📥
