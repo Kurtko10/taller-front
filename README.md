@@ -1,6 +1,6 @@
 [![SVG Banners](https://svg-banners.vercel.app/api?type=typeWriter&text1=PROYECTO%20FORMATIVO%20👨‍💻&width=800&height=150)](https://github.com/Akshay090/svg-banners)
 
-<H4 align="center">✒TALLER DE VEHÍCULOS✒</H4> 
+<H4 align="center">🚘TALLER DE VEHÍCULOS🚘</H4> 
 
 <H6>Proyecto Final del Bootcamp Full Stack Developer de Geekshubs Academy</H6>
 
