@@ -240,7 +240,7 @@ export const getAllAppointments = async (token) => {
 };
 
 //--------------------VEHICULOS-------
-// Ver vehículos del usuario
+// Ver vehículos
 export const getUserCars = async (token, userId) => {
   console.log('getUserCars called with userId:', userId);
   try {
@@ -257,6 +257,7 @@ export const getUserCars = async (token, userId) => {
   }
 };
 
+// Ver vehículos poruserId
 export const getUserCarById = async (userId, token) => {
   try {
     const response = await axios.get(`${API_URL}/api/cars/userCars/${userId}`, {
@@ -269,6 +270,7 @@ export const getUserCarById = async (userId, token) => {
     throw error;
   }
 };
+
 // Añadir vehículo
 export const addUserCar = async (token, carData) => {
   const config = {
@@ -280,6 +282,7 @@ export const addUserCar = async (token, carData) => {
   console.log(res);
   return res.data;
 };
+
 // Añadir vehículo a un usuario específico
 export const addUserCarToSpecificUser = async (token, userId, carData) => {
   const config = {
@@ -291,7 +294,6 @@ export const addUserCarToSpecificUser = async (token, userId, carData) => {
   console.log(res);
   return res.data;
 };
-
 
 // Eliminar vehículo
 export const deleteUserCar = async (token, carId) => {

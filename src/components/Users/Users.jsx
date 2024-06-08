@@ -63,7 +63,7 @@ const Users = () => {
       try {
         const userData = await getUserById(userId, token);
         setSelectedUser(userData);
-        setInitialUserData(userData); // Guardar los datos iniciales del usuario
+        setInitialUserData(userData);
         setShowModal(true);
       } catch (error) {
         alert('Error al obtener el usuario');
@@ -210,7 +210,7 @@ const Users = () => {
     try {
       const userData = await getUserById(row.id, token);
       setSelectedUser(userData);
-      setInitialUserData(userData); // Guardar los datos iniciales del usuario
+      setInitialUserData(userData);
       setShowModal(true);
     } catch (error) {
       console.error("Error al obtener los detalles del usuario:", error);

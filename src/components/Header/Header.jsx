@@ -100,8 +100,9 @@ function Header() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="home" spy={true} smooth={false} duration={1500} onClick={() => handleNavLinkClick("home")} className={`nav-link ${activeLink === "home" ? "active" : ""}`}>Home</Nav.Link>
-            <Nav.Link as={Link} to="instalaciones" spy={true} smooth={false} duration={1500} onClick={() => handleNavLinkClick("instalaciones")} className={`nav-link ${activeLink === "studio" ? "active" : ""}`}>Instalaciones</Nav.Link>
+            
             <Nav.Link as={Link} to="services" spy={true} smooth={false} duration={1500} onClick={() => handleNavLinkClick("services")} className={`nav-link ${activeLink === "services" ? "active" : ""}`}>Servicios</Nav.Link>
+            {/* <Nav.Link as={Link} to="instalaciones" spy={true} smooth={false} duration={1500} onClick={() => handleNavLinkClick("instalaciones")} className={`nav-link ${activeLink === "studio" ? "active" : ""}`}>Instalaciones</Nav.Link> */}
             <Nav.Link as={Link} to="ocasion" spy={true} smooth={false} duration={1500} onClick={() => handleNavLinkClick("ocasion")} className={`nav-link ${activeLink === "ocasion" ? "active" : ""}`}>Ocasión</Nav.Link>
             <Nav.Link as={Link} to="contact" spy={true} smooth={false} duration={1500} onClick={() => handleNavLinkClick("contact")} className={`nav-link ${activeLink === "contact" ? "active" : ""}`}>Contacto</Nav.Link>
             <Nav.Link as={Link} to="reviews" spy={true} smooth={false} duration={1500} onClick={() => handleNavLinkClick("reviews")} className={`nav-link ${activeLink === "reviews" ? "active" : ""}`}>Reseñas</Nav.Link>

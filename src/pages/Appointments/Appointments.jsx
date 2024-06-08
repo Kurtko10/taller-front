@@ -41,7 +41,7 @@ const Appointments = () => {
   const [cars, setCars] = useState([]);
   const [workers, setWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
-  const [clients, setClients] = useState([]); // Define el estado para los clientes
+  const [clients, setClients] = useState([]);
   const userReduxData = useSelector(getUserData);
   const token = userReduxData.token;
   const [clientId, setClientId] = useState(null);
