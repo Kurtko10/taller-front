@@ -23,8 +23,8 @@ Recrea la parte frontend para la gestión de un taller de vehiculos, con gestió
 
 - **Registro de usuarios**: Permite a los nuevos usuarios crear una cuenta.
 - **Login**: Los usuarios pueden iniciar sesión en su cuenta.
-- **Área de cliente**: Acceso a un panel de usuario donde pueden gestionar sus citas y vehículos.
-- **Área de trabajador**: Acceso a un panel de usuario donde pueden gestionar sus citas concertadas y ver usuarios.
+- **Área de cliente**: Acceso a un panel de usuario donde pueden gestionar sus datos, citas y vehículos.
+- **Área de trabajador**: Acceso a un panel de usuario donde pueden gestionar sus datos, citas concertadas y ver datos de clientes.
 - **Gestión de citas**: Los clientes pueden programar, modificar y cancelar citas.
 - **Funcionalidades de administrador**:
   - **Gestión de usuarios**: Permite ver, editar y eliminar usuarios.
@@ -69,7 +69,12 @@ Recrea la parte frontend para la gestión de un taller de vehiculos, con gestió
 ##  Mejoras 🌟
 
 - Mejorar avisos de errores.
+- Mejor control de gestión de las citas.
 - Permitir al usuario cambiar su avatar.
+- Descargar ficha técnica y datos del vehículo al introducir una matrícula.
+- Edición de vehículos, como los kilometros.
+- Posibilidad de desactivar el perfil por el usuario/cliente.
+- Generar orden de trabajo para los trabajadores.
 - Formulario de contacto.
 - Sistema real de reseñas y valoraciones.
 - Añadir una tienda con carro de compra.
@@ -79,5 +84,6 @@ Recrea la parte frontend para la gestión de un taller de vehiculos, con gestió
 ¡Las contribuciones son bienvenidas!
 
 ## Licencia ⚖️
-   Proyecto bajo la Licencia MIT. LICENSE
+   Desarrollado por Ángel Fernández Bravo.<a href="https://www.linkedin.com/in/angel-fb/" target="_blank"><img src="https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white" target="_blank"></a>
+   Proyecto bajo la  <a href="./LICENSE">`LICENSE`</a> MIT. 
 

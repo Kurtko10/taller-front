@@ -309,7 +309,7 @@ const Appointments = () => {
 
   return (
     <div className="appointments-container">
-      <h1>Citas {role === 'manager' ? 'del artista' : 'del usuario'}</h1>
+      <h1>Citas {role === 'manager' ? 'del mecánico' : 'del usuario'}</h1>
       <Form.Group controlId="formFilter">
         <Form.Label>Filtrar citas:</Form.Label>
         <Form.Control as="select" value={filter} onChange={(e) => handleFilterChange(e, setFilter)}>

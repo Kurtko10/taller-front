@@ -61,7 +61,7 @@ const Login = () => {
         setMsg(`${uDecodificado.userName}, bienvenid@ de nuevo.`);
 
         if (uDecodificado.userRole === "admin") {
-          navigate("/"); 
+          navigate("/admin"); 
         } else if(uDecodificado.userRole === "manager"){
           setTimeout(() => {
             navigate("/profile");
