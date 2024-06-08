@@ -19,7 +19,7 @@ function HomeSidebar() {
         <div className='card'>
                 <div className='card-inner'>
                 <a href="/users">
-                <h3>USUARIOS</h3>
+                <h4>USUARIOS</h4>
                     <BsFillArchiveFill className='card_icon'/>
                 </a>
                 </div>
@@ -29,7 +29,7 @@ function HomeSidebar() {
             <div className='card'>
                 <div className='card-inner'>
                 <a href="/admin/appointments">
-                    <h3>CITAS</h3>
+                    <h4>CITAS</h4>
                     <BsFillGrid3X3GapFill className='card_icon'/>
                 </a>
                 </div>
@@ -39,7 +39,7 @@ function HomeSidebar() {
             <div className='card'>
                 <div className='card-inner'>
                 <a href="/artists">
-                    <h3>OCASIÓN</h3>
+                    <h4>OCASIÓN</h4>
                     <BsFillGrid3X3GapFill className='card_icon'/>
                 </a>
             
@@ -50,7 +50,7 @@ function HomeSidebar() {
             <div className='card'>
                 <div className='card-inner'>
                 <a href="/profile">
-                    <h3>SETTING</h3>
+                    <h4>SETTING</h4>
                     <BsFillGrid3X3GapFill className='card_icon'/>
                 </a>
                 </div>

@@ -49,3 +49,12 @@ row{
     
   }
 }
+.no-citas{
+  width: 100%;
+}
+.no-appointments-image img {
+  width: 60px; 
+  height: 60px; 
+  object-fit: cover;
+  border-radius: 50%; 
+}

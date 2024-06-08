@@ -182,11 +182,11 @@ export const Profile = () => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3" controlId="formClientsId">
-                <Form.Label>Num. cliente:</Form.Label>
+                <Form.Label>{role === 'admin' || role === 'manager' ? 'Num. empleado:' : 'Num. cliente:'}</Form.Label>
                 <CustomInput
                   typeProp="text"
                   nameProp="clientsId"
-                  placeholderProp={`Número de cliente: ${userData?.id || ""}`}
+                  placeholderProp={role === 'admin' || role === 'manager' ? `Número de empleado: ${userData?.id || ""}` : `Número de cliente: ${userData?.id || ""}`}
                   valueProp={userData?.id || ""}
                   isDisabled={true}
                 />

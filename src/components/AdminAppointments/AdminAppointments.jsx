@@ -46,7 +46,7 @@ const AdminAppointments = () => {
   const [allWorkers, setAllWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
   const userReduxData = useSelector(getUserData);
   const token = userReduxData.token;
 

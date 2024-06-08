@@ -22,6 +22,7 @@ import Pagination from '../../components/Pagination/Pagination';
 import CreateAppointmentModal from "../../components/CreateAppointmentModal/CreateAppointmentModal";
 import EditAppointmentModal from "../../components/EditAppointmentModa/EditAppointmentModal";
 import { serviceWorkerMap, handleDelete, handleEdit, handleFilterChange, handleSearchChange, handleCriteriaChange, handlePageChange, handleInputChange } from "../../utils/utilsAppointments";
+import NoAppointments from '../../img/noCitas.png'
 import './Appointments.css';
 
 const Appointments = () => {
@@ -354,9 +355,9 @@ const Appointments = () => {
               />
             </>
           ) : (
-            <Row className="justify-content-center">
-              <Col md={6} lg={4}>
-                <p>No hay citas {filter === 'future' ? 'futuras' : filter === 'past' ? 'pasadas' : ''}.</p>
+            <Row className="justify-content-center no-citas">
+              <Col md={6} lg={8}>
+                <p>No hay citas {filter === 'PENDING' ? 'futuras' : filter === 'COMPLETED' ? 'pasadas' : ''}.</p>
               </Col>
             </Row>
           )}
@@ -391,8 +392,8 @@ const Appointments = () => {
                     </Col>
                   ))
                 ) : (
-                  <Col md={6} lg={4}>
-                    <p>No hay citas {filter === 'future' ? 'futuras' : filter === 'past' ? 'pasadas' : ''}.</p>
+                  <Col md={6} lg={8}>
+                    <p>No hay citas {filter === 'PENDING' ? 'futuras' : filter === 'COMPLETED' ? 'pasadas' : ''}.</p>
                   </Col>
                 )}
               </Row>
@@ -403,7 +404,8 @@ const Appointments = () => {
               <Row className="justify-content-center">
                 <Col md={6} lg={4}>
                   <div className="no-appointments-image">
-                    <img src="ruta/a/imagen_placeholder.png" alt="No hay citas" />
+                    <img src={NoAppointments} alt="No hay citas" />
+                    <p>Pide una cita</p>
                   </div>
                 </Col>
               </Row>

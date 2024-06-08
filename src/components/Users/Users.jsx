@@ -19,7 +19,7 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [initialUserData, setInitialUserData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const profilesPerPage = 5;
+  const profilesPerPage = 10;
   const [showModal, setShowModal] = useState(false);
   const [showCarsModal, setShowCarsModal] = useState(false);
   const [showAddCarModal, setShowAddCarModal] = useState(false);
